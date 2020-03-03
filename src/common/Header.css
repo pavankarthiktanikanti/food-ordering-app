@@ -1,0 +1,25 @@
+/* Styling the header banner and aligning items to center */
+
+.app-header {
+    background-color: #273238;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+/* Set margin right for the account icon beside login */
+
+.account-icon {
+    margin-right: 5px;
+}
+
+/* Set the style based on screen width */
+
+@media(max-width: 525px) {
+    /* align elements vertically in small screens */
+    .app-header {
+        flex-direction: column;
+        align-items: baseline;
+    }
+}
