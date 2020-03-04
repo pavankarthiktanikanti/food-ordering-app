@@ -6,6 +6,21 @@
     align-items: center;
     justify-content: space-between;
     padding: 5px;
+    width: 100%;
+}
+
+/* Set the width of search box section */
+
+#search-box-section {
+    width: 300px;
+}
+
+/* Style the search icon with margin and padding */
+
+.search-icon {
+    color: white;
+    margin-right: 5px;
+    padding-bottom: 5px;
 }
 
 /* Set margin right for the account icon beside login */
@@ -21,5 +36,13 @@
     .app-header {
         flex-direction: column;
         align-items: baseline;
+    }
+}
+
+/* Set the style for low screen width like small mobiles */
+
+@media(max-width:310px) {
+    #search-box-section {
+        width: auto;
     }
 }

@@ -22,7 +22,6 @@ const styles = theme => ({
     /* Style the search input text box with color, width, margin & border*/
     searchRestaurantTextInput: {
         color: 'white',
-        width: '300px',
         margin: '5px',
         /* Set the border to white after selecting the text box */
         '&:after': {
@@ -45,16 +44,18 @@ class Header extends Component {
                  * Show the Fast food icon
                  */}
                 <FastfoodIcon className={classes.logo} />
-                <Input
-                    startAdornment={
-                        /**
-                         * Show the magnifier Search icon inside the text box at the start
-                         */
-                        <InputAdornment>
-                            <SearchIcon htmlColor='white' />
-                        </InputAdornment>
-                    }
-                    placeholder='Search by Restaurant Name' className={classes.searchRestaurantTextInput} />
+                <div id="search-box-section">
+                    <Input
+                        startAdornment={
+                            /**
+                             * Show the magnifier Search icon inside the text box at the start
+                             */
+                            <InputAdornment>
+                                <SearchIcon className='search-icon' />
+                            </InputAdornment>
+                        }
+                        placeholder='Search by Restaurant Name' className={classes.searchRestaurantTextInput} fullWidth />
+                </div>
 
                 {/**
                  * Login button with account circle icon
