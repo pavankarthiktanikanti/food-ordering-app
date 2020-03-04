@@ -17,20 +17,23 @@ const styles = theme => ({
     logo: {
         color: 'white',
         'font-size': 'xx-large',
-        margin: '5px'
+        margin: '15px 20px'
     },
-    /* Style the search input text box with color, width, margin & border*/
+    /* Style the search input text box with color, margin & border*/
     searchRestaurantTextInput: {
         color: 'white',
-        margin: '5px',
+        margin: '10px',
         /* Set the border to white after selecting the text box */
         '&:after': {
             'border-bottom': '2px solid white',
-        }
+        },
+        'padding-bottom': '2px'
     },
-    /* Set the margin for login button */
+    /* Set the margin, padding for login button */
     loginBtn: {
-        margin: '5px'
+        margin: '10px 15px 10px 5px',
+        'padding-top': '8px',
+        'padding-bottom': '8px'
     }
 
 });
