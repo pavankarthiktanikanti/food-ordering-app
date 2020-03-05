@@ -110,9 +110,20 @@ class Header extends Component {
     /**
      * Click handler for login button on header
      * Opens the login/Signup modal for the customer to signup or login
+     * reset the field values for the modal tabs
      */
     loginClickHandler = () => {
-        this.setState({ modalIsOpen: true });
+        this.setState({
+            modalIsOpen: true,
+            contactNo: '',
+            contactNoRequired: 'dispNone',
+            invalidLoginContactNo: 'dispNone',
+            loginPassword: '',
+            loginPasswordRequired: 'dispNone',
+            loginFailureMsg: '',
+            firstName: '',
+            firstNameRequired: 'dispNone'
+        });
     }
 
     /**
