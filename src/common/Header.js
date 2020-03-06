@@ -96,11 +96,11 @@ class Header extends Component {
         this.state = {
             modalIsOpen: false,
             value: 0,
-            isUserLoggedIn: false,
+            isUserLoggedIn: sessionStorage.getItem('access-token') != null,
             showMenu: false,
             showSnackbar: false,
             snackBarMsg: '',
-            loggedUserFirstName: '',
+            loggedUserFirstName: sessionStorage.getItem('userFirstName') != null ? sessionStorage.getItem('userFirstName') : '',
             contactNo: '',
             contactNoRequired: 'dispNone',
             invalidLoginContactNo: 'dispNone',
