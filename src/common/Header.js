@@ -2,15 +2,18 @@ import { withStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import CloseIcon from '@material-ui/icons/Close';
 import FastfoodIcon from '@material-ui/icons/Fastfood';
 import SearchIcon from '@material-ui/icons/Search';
 import React, { Component } from 'react';
@@ -95,6 +98,8 @@ class Header extends Component {
             value: 0,
             isUserLoggedIn: false,
             showMenu: false,
+            showSnackbar: false,
+            snackBarMsg: '',
             loggedUserFirstName: '',
             contactNo: '',
             contactNoRequired: 'dispNone',
@@ -183,7 +188,12 @@ class Header extends Component {
                         // Set the user first name and access token to session storage
                         sessionStorage.setItem('userFirstName', response.first_name);
                         sessionStorage.setItem('access-token', this.getResponseHeader('access-token'));
-                        thisComponent.setState({ isUserLoggedIn: true, loggedUserFirstName: response.first_name });
+                        thisComponent.setState({
+                            isUserLoggedIn: true,
+                            loggedUserFirstName: response.first_name,
+                            showSnackbar: true,
+                            snackBarMsg: 'Logged in successfully!'
+                        });
                         // Close the modal after successful login
                         thisComponent.closeModalHandler();
                     } else if (this.status === 401) {
@@ -214,6 +224,18 @@ class Header extends Component {
             showMenu: !this.state.showMenu,
             anchorEl: this.state.anchorEl != null ? null : event.currentTarget
         });
+    }
+
+    /**
+     * Handle Close event on Snackbar, if close event is triggered, hide it
+     */
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        // Setting the state variable to hide the Snackbar
+        this.setState({ showSnackbar: false, snackBarMsg: '' });
     }
 
     render() {
@@ -316,6 +338,29 @@ class Header extends Component {
                         </TabContainer>
                     }
                 </Modal>
+                {/**
+                 * Show the snack bar at the bottom left of the page
+                 * auto hides after 30 seconds, close icon is added to close if needed before the auto hide timesout
+                 */}
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={this.state.showSnackbar}
+                    autoHideDuration={30000}
+                    onClose={this.handleClose}
+                    message={this.state.snackBarMsg}
+                    action={
+                        /**
+                         * Show close button to close the snackbar if the user wishes to
+                         */
+                        <React.Fragment>
+                            <IconButton size="small" aria-label="close" color="inherit" onClick={this.handleClose}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </React.Fragment>
+                    } />
             </div>
         );
     }
