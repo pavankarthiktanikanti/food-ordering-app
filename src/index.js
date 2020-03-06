@@ -2,12 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import Header from './common/Header';
+import Controller from './screens/Controller';
 
 ReactDOM.render(
-    <div>
-        <Header />
-    </div>,
+    <Controller />,
     document.getElementById('root')
 );
 
