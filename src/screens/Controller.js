@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Header from '../common/Header';
 import Profile from '../screens/profile/Profile';
+import Home from '../screens/home/Home'
 
 /**
  * Controller Component for handling the URL Paths and routing/loading respective Component
@@ -23,7 +23,7 @@ class Controller extends Component {
     return (
       <Router>
         <div className="main-container">
-          <Route exact path='/' render={(props) => <Header {...props} baseUrl={this.baseUrl} />} />
+          <Route exact path='/' render={(props) => <Home {...props} baseUrl={this.baseUrl} />} />
           <Route exact path='/profile' render={(props) => <Profile {...props} baseUrl={this.baseUrl} />} />
         </div>
       </Router>

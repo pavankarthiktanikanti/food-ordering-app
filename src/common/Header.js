@@ -475,7 +475,9 @@ class Header extends Component {
                             <InputAdornment>
                                 <SearchIcon className='search-icon' />
                             </InputAdornment>
-                        }
+                        } onChange={(e) => {
+                            this.props.searchBoxChangeHandler(e.target.value)
+                        }}
                         placeholder='Search by Restaurant Name' className={classes.searchRestaurantTextInput} fullWidth />
                 </div>
 
