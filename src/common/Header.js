@@ -260,6 +260,24 @@ class Header extends Component {
     }
 
     /**
+     * Navigate to Profile Page when My Profile Menu is clicked
+     */
+    myProfileClickHandler = () => {
+        this.props.history.push("/profile");
+    }
+
+    /**
+     * Logout the user and clear the session storage
+     */
+    logoutClickHandler = () => {
+        sessionStorage.removeItem('userFirstName');
+        sessionStorage.removeItem('access-token');
+        this.setState({
+            isUserLoggedIn: false
+        });
+    }
+
+    /**
      * Set the value of input field to state for first name
      */
     inputFirstNameChangeHandler = (e) => {
@@ -465,10 +483,10 @@ class Header extends Component {
                             open={this.state.showMenu}
                             onClose={this.profileClickHandler}
                             className='profile-options-menu'>
-                            <MenuItem>
+                            <MenuItem onClick={this.myProfileClickHandler}>
                                 <span className='menu-option'>My Profile</span>
                             </MenuItem>
-                            <MenuItem>
+                            <MenuItem onClick={this.logoutClickHandler}>
                                 <span className='menu-option'>Logout</span>
                             </MenuItem>
                         </Menu>
