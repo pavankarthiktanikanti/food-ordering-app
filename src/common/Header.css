@@ -54,6 +54,13 @@
     font-weight: 500;
 }
 
+/* Style the menu option link with color and decoration */
+
+.menu-option-link {
+    color: black;
+    text-decoration: none;
+}
+
 /** Set the bottom margin for tabs on modal */
 
 .tabs {

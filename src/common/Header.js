@@ -18,6 +18,7 @@ import FastfoodIcon from '@material-ui/icons/Fastfood';
 import SearchIcon from '@material-ui/icons/Search';
 import React, { Component } from 'react';
 import Modal from 'react-modal';
+import { Link } from 'react-router-dom';
 import './Header.css';
 
 /**
@@ -93,7 +94,7 @@ class Header extends Component {
     constructor() {
         super();
         /**
-         * Set the state will all the required fields and values
+         * Set the state with all the required fields and values
          */
         this.state = {
             modalIsOpen: false,
@@ -257,13 +258,6 @@ class Header extends Component {
             showMenu: !this.state.showMenu,
             anchorEl: this.state.anchorEl != null ? null : event.currentTarget
         });
-    }
-
-    /**
-     * Navigate to Profile Page when My Profile Menu is clicked
-     */
-    myProfileClickHandler = () => {
-        this.props.history.push("/profile");
     }
 
     /**
@@ -501,9 +495,11 @@ class Header extends Component {
                             open={this.state.showMenu}
                             onClose={this.profileClickHandler}
                             className='profile-options-menu'>
-                            <MenuItem onClick={this.myProfileClickHandler}>
-                                <span className='menu-option'>My Profile</span>
-                            </MenuItem>
+                            <Link to='/profile' className="menu-option-link">
+                                <MenuItem>
+                                    <span className='menu-option'>My Profile</span>
+                                </MenuItem>
+                            </Link>
                             <MenuItem onClick={this.logoutClickHandler}>
                                 <span className='menu-option'>Logout</span>
                             </MenuItem>
