@@ -241,7 +241,7 @@ class Header extends Component {
             let data = null;
             // convert the credentials to Base64 format for Basic authorization
             let authorization = window.btoa(this.state.contactNo + ':' + this.state.loginPassword);
-            xhr.open('POST', this.props.baseUrl + '/api/customer/login');
+            xhr.open('POST', this.props.baseUrl + '/customer/login');
             xhr.setRequestHeader('Authorization', 'Basic ' + authorization);
             xhr.setRequestHeader('Cache-Control', 'no-cache');
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -425,7 +425,7 @@ class Header extends Component {
             }
             let signupData = JSON.stringify(data);
             // access the signup endpoint and submit the data with all inputs
-            xhr.open('POST', this.props.baseUrl + '/api/customer/signup');
+            xhr.open('POST', this.props.baseUrl + '/customer/signup');
             xhr.setRequestHeader('Cache-Control', 'no-cache');
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(signupData);
