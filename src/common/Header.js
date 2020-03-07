@@ -1,4 +1,4 @@
-import { withStyles } from '@material-ui/core';
+import { Fade, withStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -100,6 +100,7 @@ class Header extends Component {
             showMenu: false,
             showSnackbar: false,
             snackBarMsg: '',
+            transition: Fade,
             loggedUserFirstName: sessionStorage.getItem('userFirstName') != null ? sessionStorage.getItem('userFirstName') : '',
             contactNo: '',
             contactNoRequired: 'dispNone',
@@ -108,7 +109,18 @@ class Header extends Component {
             loginPasswordRequired: 'dispNone',
             loginFailureMsg: '',
             firstName: '',
-            firstNameRequired: 'dispNone'
+            firstNameRequired: 'dispNone',
+            lastName: '',
+            email: '',
+            emailRequired: 'dispNone',
+            invalidEmail: 'dispNone',
+            signupPassword: '',
+            signupPasswordRequired: 'dispNone',
+            invalidSignupPassword: 'dispNone',
+            signupContact: '',
+            signupContactRequired: 'dispNone',
+            invalidSignupContactNo: 'dispNone',
+            signupFailureMsg: ''
         }
     }
 
@@ -120,6 +132,7 @@ class Header extends Component {
     loginClickHandler = () => {
         this.setState({
             modalIsOpen: true,
+            value: 0,
             contactNo: '',
             contactNoRequired: 'dispNone',
             invalidLoginContactNo: 'dispNone',
@@ -127,7 +140,18 @@ class Header extends Component {
             loginPasswordRequired: 'dispNone',
             loginFailureMsg: '',
             firstName: '',
-            firstNameRequired: 'dispNone'
+            firstNameRequired: 'dispNone',
+            lastName: '',
+            email: '',
+            emailRequired: 'dispNone',
+            invalidEmail: 'dispNone',
+            signupPassword: '',
+            signupPasswordRequired: 'dispNone',
+            invalidSignupPassword: 'dispNone',
+            signupContact: '',
+            signupContactRequired: 'dispNone',
+            invalidSignupContactNo: 'dispNone',
+            signupFailureMsg: ''
         });
     }
 
@@ -144,6 +168,13 @@ class Header extends Component {
      */
     tabChangeHandler = (event, value) => {
         this.setState({ value });
+    }
+
+    /**
+     * prevent default submission of form
+     */
+    handleSubmit = (event) => {
+        event.preventDefault();
     }
 
     /**
@@ -227,6 +258,161 @@ class Header extends Component {
     }
 
     /**
+     * Set the value of input field to state for first name
+     */
+    inputFirstNameChangeHandler = (e) => {
+        this.setState({ firstName: e.target.value });
+    }
+
+    /**
+     * Set the value of input field to state for last name
+     */
+    inputLastNameChangeHandler = (e) => {
+        this.setState({ lastName: e.target.value });
+    }
+
+    /**
+     * Set the value of input field to state for signup email
+     */
+    inputEmailChangeHandler = (e) => {
+        this.setState({ email: e.target.value });
+    }
+
+    /**
+     * Set the value of input field to state for signup password
+     */
+    inputSignupPasswordChangeHandler = (e) => {
+        this.setState({ signupPassword: e.target.value });
+    }
+
+    /**
+     * Set the value of input field to state for signup password
+     */
+    inputSignupContactChangeHandler = (e) => {
+        this.setState({ signupContact: e.target.value });
+    }
+
+    /**
+     * Validate input values for Signup tab
+     * checks if all the fields other than last name are keyed in or not
+     * validates the email, password, contact number formats and throws invalid error if not aligned with the format
+     * Error messages will be shown if inputs are not provided and if any failure from the server
+     */
+    tabSignupClickHandler = () => {
+        this.setState({ signupFailureMsg: '' });
+        let proceedSignup = true;
+        let firstNameRequired = 'dispNone';
+        let emailRequired = 'dispNone';
+        let signupPasswordRequired = 'dispNone';
+        let signupContactRequired = 'dispNone';
+        let invalidEmail = 'dispNone';
+        let invalidSignupPassword = 'dispNone';
+        let invalidSignupContactNo = 'dispNone';
+        // check for empty field validation, show error message if empty
+        // if any of the validation fails for any field, update proceedSignup
+        // to false to halt the signup trigger to backend
+        if (this.state.firstName === '') {
+            firstNameRequired = 'dispBlock';
+            proceedSignup = false;
+        }
+        if (this.state.email === '') {
+            emailRequired = 'dispBlock';
+            proceedSignup = false;
+        }
+        if (this.state.signupPassword === '') {
+            signupPasswordRequired = 'dispBlock';
+            proceedSignup = false;
+        }
+        if (this.state.signupContact === '') {
+            signupContactRequired = 'dispBlock';
+            proceedSignup = false;
+        }
+        let emailPattern = new RegExp('^[\\w-_\\.+]*[\\w-_\\.]@([\\w]+\\.)+[\\w]+[\\w]$');
+
+        // validate if the email entered is in the right pattern
+        if (this.state.email !== '' && !emailPattern.test(this.state.email)) {
+            // show invalid email error message
+            invalidEmail = 'dispBlock';
+            proceedSignup = false;
+        }
+
+        // (?=.*[A-Z]) Match at least one Capital letter
+        // (?=.*[a-z]) Match at least one Small letter
+        // (?=.*\d) at least one digit
+        // (?=.*[#@$%&*!^]) at least one among the listed special characters
+        // (.*) remaining can be any character
+        // {8,} length at least 8
+        let passwordPattern = new RegExp('(?=^.{8,}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[#@$%&*!^])(.*)');
+        // check if the password has at least a capital letter, a small letter, a number and a special character
+        if (this.state.signupPassword !== '' && !passwordPattern.test(this.state.signupPassword)) {
+            // show invalid password error message
+            invalidSignupPassword = 'dispBlock';
+            proceedSignup = false;
+        }
+
+        let contactNoPattern = new RegExp('^\\d{10}$');
+
+        // check if the contactNo is 10 digits or not
+        if (this.state.signupContact !== '' && !contactNoPattern.test(this.state.signupContact)) {
+            // show invalid contact no error message
+            invalidSignupContactNo = 'dispBlock';
+            proceedSignup = false;
+        }
+
+        // set all the error field validation displays to state
+        this.setState({
+            firstNameRequired: firstNameRequired,
+            emailRequired: emailRequired,
+            signupPasswordRequired: signupPasswordRequired,
+            signupContactRequired: signupContactRequired,
+            invalidEmail: invalidEmail,
+            invalidSignupPassword: invalidSignupPassword,
+            invalidSignupContactNo: invalidSignupContactNo
+        });
+        // If no validation error, proceed to signup to access the backend endpoint
+        if (proceedSignup) {
+            let xhr = new XMLHttpRequest();
+            let thisComponent = this;
+            xhr.addEventListener('readystatechange', function () {
+                if (this.readyState === 4) {
+                    // Registration is successful
+                    if (this.status === 201) {
+                        // Set the message to snackbar and show on the page
+                        thisComponent.setState({
+                            showSnackbar: true,
+                            snackBarMsg: 'Registered successfully! Please login now!'
+                        });
+                        // call login click handler to reset the state and show a fresh modal
+                        thisComponent.loginClickHandler();
+                    } else if (this.status === 400) {
+                        // Signup failure from Server
+                        let response = JSON.parse(this.response);
+                        if ('SGR-001' === response.code) {
+                            thisComponent.setState({ signupFailureMsg: response.message });
+                        }
+                    }
+                }
+            })
+            let data = {
+                'contact_number': this.state.signupContact,
+                'email_address': this.state.email,
+                'first_name': this.state.firstName,
+                'password': this.state.signupPassword
+            };
+            // Send last name only if it is entered by customer
+            if (this.state.lastName !== '') {
+                data.last_name = this.state.lastName;
+            }
+            let signupData = JSON.stringify(data);
+            // access the signup endpoint and submit the data with all inputs
+            xhr.open('POST', this.props.baseUrl + '/api/customer/signup');
+            xhr.setRequestHeader('Cache-Control', 'no-cache');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(signupData);
+        }
+    }
+
+    /**
      * Handle Close event on Snackbar, if close event is triggered, hide it
      */
     handleClose = (event, reason) => {
@@ -301,42 +487,106 @@ class Header extends Component {
                         <Tab label='LOGIN' />
                         <Tab label='SIGNUP' />
                     </Tabs>
-                    {/**
-                     * Show the login tab with contact no and password for the customer to login to application
-                     */}
-                    {this.state.value === 0 &&
-                        <TabContainer>
-                            <FormControl className={classes.formInputControl} required>
-                                <InputLabel htmlFor='contactNo'>Contact No</InputLabel>
-                                <Input id='contactNo' type='text' onChange={this.inputContactNoChangeHandler} fullWidth />
-                                <FormHelperText className={this.state.contactNoRequired}>
-                                    <span className='red'>required</span>
-                                </FormHelperText>
-                                <FormHelperText className={this.state.invalidLoginContactNo}>
-                                    <span className='red'>Invalid Contact</span>
-                                </FormHelperText>
-                            </FormControl>
-                            <br /><br />
-                            <FormControl className={classes.formInputControl} required>
-                                <InputLabel htmlFor='loginPassword'>Password</InputLabel>
-                                <Input id='loginPassword' type='password' onChange={this.inputPasswordChangeHandler} fullWidth />
-                                <FormHelperText className={this.state.loginPasswordRequired}>
-                                    <span className='red'>required</span>
-                                </FormHelperText>
-                                {/**
-                                 * Error Text message if in case the provided credentials doesn't match with the server database
-                                 * records
-                                 */}
-                                {this.state.loginFailureMsg !== '' &&
-                                    <FormHelperText>
-                                        <span className='red'>{this.state.loginFailureMsg}</span>
+                    <form onSubmit={this.handleSubmit}>
+                        {/**
+                         * Show the login tab with contact no and password for the customer to login to application
+                         */}
+                        {this.state.value === 0 &&
+                            <TabContainer>
+                                <FormControl className={classes.formInputControl} required>
+                                    <InputLabel htmlFor='contactNo'>Contact No</InputLabel>
+                                    <Input id='contactNo' type='text' onChange={this.inputContactNoChangeHandler} value={this.state.contactNo} fullWidth />
+                                    <FormHelperText className={this.state.contactNoRequired}>
+                                        <span className='red'>required</span>
                                     </FormHelperText>
-                                }
-                            </FormControl>
-                            <br /><br />
-                            <Button variant='contained' color='primary' onClick={this.tabLoginClickHandler}>Login</Button>
-                        </TabContainer>
-                    }
+                                    <FormHelperText className={this.state.invalidLoginContactNo}>
+                                        <span className='red'>Invalid Contact</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br /><br />
+                                <FormControl className={classes.formInputControl} required>
+                                    <InputLabel htmlFor='loginPassword'>Password</InputLabel>
+                                    <Input id='loginPassword' type='password' onChange={this.inputPasswordChangeHandler} value={this.state.loginPassword} fullWidth />
+                                    <FormHelperText className={this.state.loginPasswordRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                    {/**
+                                     * Error Text message if in case the provided credentials doesn't match with the server database
+                                     * records
+                                     */}
+                                    {this.state.loginFailureMsg !== '' &&
+                                        <FormHelperText>
+                                            <span className='red'>{this.state.loginFailureMsg}</span>
+                                        </FormHelperText>
+                                    }
+                                </FormControl>
+                                <br /><br />
+                                <Button variant='contained' color='primary' onClick={this.tabLoginClickHandler}>Login</Button>
+                            </TabContainer>
+                        }
+                        {/**
+                         * Show the signup tab with first name, last name, email, password and contact no for the customer to signup to application
+                         */}
+                        {this.state.value === 1 &&
+                            <TabContainer>
+                                <FormControl className={classes.formInputControl} required>
+                                    <InputLabel htmlFor='firstName'>First Name</InputLabel>
+                                    <Input id='firstName' type='text' onChange={this.inputFirstNameChangeHandler} value={this.state.firstName} fullWidth />
+                                    <FormHelperText className={this.state.firstNameRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br /><br />
+                                <FormControl className={classes.formInputControl}>
+                                    <InputLabel htmlFor='lastName'>Last Name</InputLabel>
+                                    <Input id='lastName' type='text' onChange={this.inputLastNameChangeHandler} value={this.state.lastName} fullWidth />
+                                </FormControl>
+                                <br /><br />
+                                <FormControl className={classes.formInputControl} required>
+                                    <InputLabel htmlFor='email'>Email</InputLabel>
+                                    <Input id='email' type='email' onChange={this.inputEmailChangeHandler} value={this.state.email} fullWidth />
+                                    <FormHelperText className={this.state.emailRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                    <FormHelperText className={this.state.invalidEmail}>
+                                        <span className='red'>Invalid Email</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br /><br />
+                                <FormControl className={classes.formInputControl} required>
+                                    <InputLabel htmlFor='signupPassword'>Password</InputLabel>
+                                    <Input id='signupPassword' type='password' onChange={this.inputSignupPasswordChangeHandler} value={this.state.signupPassword} fullWidth />
+                                    <FormHelperText className={this.state.signupPasswordRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                    <FormHelperText className={this.state.invalidSignupPassword}>
+                                        <span className='red'>Password must contain at least one capital letter, one small letter, one number, and one special character</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br /><br />
+                                <FormControl className={classes.formInputControl} required>
+                                    <InputLabel htmlFor='signupContact'>Contact No</InputLabel>
+                                    <Input id='signupContact' type='text' onChange={this.inputSignupContactChangeHandler} value={this.state.signupContact} fullWidth />
+                                    <FormHelperText className={this.state.signupContactRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                    <FormHelperText className={this.state.invalidSignupContactNo}>
+                                        <span className='red'>Contact No. must contain only numbers and must be 10 digits long</span>
+                                    </FormHelperText>
+                                    {/**
+                                     * Error Text message if in case the provided contact number is already registered, error from server backend
+                                     */}
+                                    {this.state.signupFailureMsg !== '' &&
+                                        <FormHelperText>
+                                            <span className='red'>{this.state.signupFailureMsg}</span>
+                                        </FormHelperText>
+                                    }
+                                </FormControl>
+                                <br /><br />
+                                <Button variant='contained' color='primary' onClick={this.tabSignupClickHandler}>Signup</Button>
+                            </TabContainer>
+                        }
+                    </form>
                 </Modal>
                 {/**
                  * Show the snack bar at the bottom left of the page
@@ -350,6 +600,7 @@ class Header extends Component {
                     open={this.state.showSnackbar}
                     autoHideDuration={30000}
                     onClose={this.handleClose}
+                    TransitionComponent={this.state.transition}
                     message={this.state.snackBarMsg}
                     action={
                         /**
