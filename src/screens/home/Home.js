@@ -43,7 +43,7 @@ class Home extends Component {
     UNSAFE_componentWillMount() {
         let that = this;
         let xhrData = new XMLHttpRequest();
-        let restaurants = [];
+        let restaurants = null;
         xhrData.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                 that.setState({
@@ -66,7 +66,7 @@ class Home extends Component {
         if (searchValue !== '' && searchValue !== null) {
             let that = this;
             let xhrData = new XMLHttpRequest();
-            let restaurants = [];
+            let restaurants = null;
             xhrData.addEventListener("readystatechange", function () {
                 if (this.readyState === 4) {
                     that.setState({
