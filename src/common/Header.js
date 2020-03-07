@@ -270,11 +270,25 @@ class Header extends Component {
      * Logout the user and clear the session storage
      */
     logoutClickHandler = () => {
-        sessionStorage.removeItem('userFirstName');
-        sessionStorage.removeItem('access-token');
-        this.setState({
-            isUserLoggedIn: false
+        let xhr = new XMLHttpRequest();
+        let thisComponent = this;
+        xhr.addEventListener('readystatechange', function () {
+            if (this.readyState === 4 && this.status === 200) {
+                // on successful logout, remove the access token and user first name from session
+                sessionStorage.removeItem('userFirstName');
+                sessionStorage.removeItem('access-token');
+                thisComponent.setState({
+                    isUserLoggedIn: false
+                });
+            }
         });
+        let data = null;
+        xhr.open('POST', this.props.baseUrl + '/customer/logout');
+        // set the bearer access token to invalidate the session at the backend
+        xhr.setRequestHeader('authorization', 'Bearer ' + sessionStorage.getItem('access-token'));
+        xhr.setRequestHeader('Cache-Control', 'no-cache');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(data);
     }
 
     /**
