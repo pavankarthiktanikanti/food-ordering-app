@@ -51,7 +51,7 @@ class Home extends Component {
                 });
             }
         });
-        xhrData.open("GET", this.props.baseUrl + '/api/restaurant');
+        xhrData.open("GET", this.props.baseUrl + '/restaurant');
         xhrData.send(restaurants);
     }
 
@@ -74,7 +74,7 @@ class Home extends Component {
                     });
                 }
             });
-            xhrData.open("GET", this.props.baseUrl + '/api/restaurant/name/' + searchValue);
+            xhrData.open("GET", this.props.baseUrl + '/restaurant/name/' + searchValue);
             xhrData.send(restaurants);
 
         } else {
