@@ -71,8 +71,8 @@ const customStyles = {
         bottom: 'auto',
         marginRight: '-50%',
         transform: 'translate(-50%, -50%)',
-        'max-height': '100vh',
-        'overflow-y': 'auto'
+        maxHeight: '100vh',
+        overflowY: 'auto'
     }
 }
 
