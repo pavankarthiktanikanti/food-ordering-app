@@ -1,0 +1,76 @@
+/* Style the background of the restaurant details container */
+
+.restaurant-info-container {
+    background-color: #E7E7E7;
+    padding: 30px;
+    display: flex;
+}
+
+/* Set the width and height of restaurant image */
+
+.restaurant-img {
+    max-width: 300px;
+    width: auto;
+    height: 250px;
+}
+
+/* Style the details section with full width and left margin */
+
+.details-section {
+    width: 100%;
+    margin-left: 5%;
+}
+
+/* Set the width and display style for the rating info */
+
+.rating-price-container {
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Set bottom padding for star icon */
+
+.fa-star-icon {
+    padding-bottom: 1px;
+}
+
+/* Set the font to bold for no of customer */
+
+.no-of-customers {
+    font-weight: bold;
+}
+
+/* Style the caption text with color and max width */
+
+.caption-text {
+    color: grey;
+    max-width: 150px;
+}
+
+/* Set the style based on screen width */
+
+@media(max-width: 700px) {
+    /* set the alignment for the restaurant info to show column wise on small screens*/
+    .restaurant-info-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    /* align the text to center */
+    .details-section {
+        text-align: center;
+    }
+    /* use the full width on small view */
+    .rating-price-container {
+        width: 100%;
+    }
+}
+
+/* Set the style for low screen width like small mobiles */
+
+@media(max-width:350px) {
+    .restaurant-img {
+        max-width: 250px;
+        width: auto;
+    }
+}
