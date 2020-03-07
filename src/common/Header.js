@@ -466,20 +466,22 @@ class Header extends Component {
                  * Show the Fast food icon
                  */}
                 <FastfoodIcon className={classes.logo} />
-                <div id='search-box-section'>
-                    <Input
-                        startAdornment={
-                            /**
-                             * Show the magnifier Search icon inside the text box at the start
-                             */
-                            <InputAdornment>
-                                <SearchIcon className='search-icon' />
-                            </InputAdornment>
-                        } onChange={(e) => {
-                            this.props.searchBoxChangeHandler(e.target.value)
-                        }}
-                        placeholder='Search by Restaurant Name' className={classes.searchRestaurantTextInput} fullWidth />
-                </div>
+                {this.props.pageId === 'home' &&
+                    <div id='search-box-section'>
+                        <Input
+                            startAdornment={
+                                /**
+                                 * Show the magnifier Search icon inside the text box at the start
+                                 */
+                                <InputAdornment>
+                                    <SearchIcon className='search-icon' />
+                                </InputAdornment>
+                            } onChange={(e) => {
+                                this.props.searchBoxChangeHandler(e.target.value)
+                            }}
+                            placeholder='Search by Restaurant Name' className={classes.searchRestaurantTextInput} fullWidth />
+                    </div>
+                }
 
                 {this.state.isUserLoggedIn ?
                     <section>
