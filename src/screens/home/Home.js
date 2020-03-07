@@ -87,7 +87,7 @@ class Home extends Component {
         let rdata = this.state.restaurants;
         return (
             <div>
-                <Header pageId='home' baseUrl={this.props.baseUrl} searchBoxChangeHandler={this.searchBoxChangeHandler} ></Header>
+                <Header pageId='home' {...this.props} searchBoxChangeHandler={this.searchBoxChangeHandler} />
                 <div className="home-container">
                     <GridList cellHeight={"auto"} cols={4}>
                         {rdata !== [] && rdata !== null && rdata.map(restaurant => (
