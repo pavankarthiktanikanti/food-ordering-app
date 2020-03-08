@@ -1,4 +1,8 @@
-/* Styling home page content */
-.home-container {
-  padding: 10px;
+/** Set the display as none, in order to hide a element */
+.dispNone {
+  display: none;
+}
+/** Set the display as block, in order to show a hidden element */
+.dispBlock {
+  display: block;
 }
