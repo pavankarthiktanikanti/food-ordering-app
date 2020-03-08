@@ -47,8 +47,14 @@ const styles = theme => ({
         float: 'right',
         fontSize: 'small',
     }
-
 })
+
+/**
+ * Style the home screen
+ */
+const homeStyles = {
+    margin: '22px'
+}
 
 class Home extends Component {
 
@@ -56,7 +62,8 @@ class Home extends Component {
         super();
         this.state = {
             restaurants: [],
-            search: ''
+            search: '',
+            dispMessage: 'dispNone'
         }
     }
 
@@ -70,6 +77,7 @@ class Home extends Component {
                 that.setState({
                     restaurants: JSON.parse(this.response).restaurants
                 });
+                that.setState({ dispMessage: 'dispNone' })
             }
         });
         xhrData.open("GET", this.props.baseUrl + '/restaurant');
@@ -93,6 +101,12 @@ class Home extends Component {
                     that.setState({
                         restaurants: JSON.parse(this.response).restaurants
                     });
+                    console.log("checking restaurant" + that.state.restaurants);
+                    if (that.state.restaurants.length === 0) {
+                        that.setState({ dispMessage: 'dispBlock' })
+                    } else {
+                        that.setState({ dispMessage: 'dispNone' })
+                    }
                 }
             });
             xhrData.open("GET", this.props.baseUrl + '/restaurant/name/' + searchValue);
@@ -118,8 +132,8 @@ class Home extends Component {
         return (
             <div>
                 <Header pageId='home' baseUrl={this.props.baseUrl} searchBoxChangeHandler={this.searchBoxChangeHandler} />
-                <div>
-                    <GridList cellHeight={"auto"} spacing={16} style={{ margin: '7px 14px' }}>
+                <div style={homeStyles}>
+                    <GridList cellHeight={"auto"} spacing={16} >
                         {rdata !== [] && rdata !== null && rdata.map(restaurant => (
                             <Grid container item key={restaurant.id} className={classes.root} xs={6}
                                 sm={6} lg={3} >
@@ -156,6 +170,9 @@ class Home extends Component {
                             </Grid>
                         ))}
                     </GridList>
+                    <div className={this.state.dispMessage}>
+                        <Typography>No restaurant with the given name.</Typography>
+                    </div>
                 </div>
             </div>
         )
