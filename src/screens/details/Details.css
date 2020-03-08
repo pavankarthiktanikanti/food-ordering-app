@@ -60,6 +60,7 @@
 
 .items-container {
     width: 50%;
+    margin-right: 10%;
 }
 
 /* Style the category name displayed in all caps */
@@ -82,14 +83,14 @@
 
 .fa-circle-green {
     color: rgb(18, 136, 53);
-    font-size: smaller;
+    font-size: large;
 }
 
 /* Style the circle icon for Non Veg item */
 
 .fa-circle-red {
     color: rgb(180, 36, 16);
-    font-size: smaller;
+    font-size: large;
 }
 
 /* Show menu items in Pascal Case */
@@ -116,6 +117,49 @@
     width: 50%;
 }
 
+/* Style the menu item in cart */
+
+.cart-menu-item {
+    text-transform: capitalize;
+    color: gray;
+}
+
+/* Style the quantity section in cart */
+
+.item-quantity-section {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+/* Style the price section in the cart */
+
+.cart-item-price {
+    margin-left: 8%;
+    float: right;
+    color: gray;
+}
+
+/* Style the total amount in the cart section */
+
+.total-amount {
+    display: flex;
+    margin: 2% 0%;
+    justify-content: space-between;
+}
+
+/* bold font */
+
+.bold {
+    font-weight: bold;
+}
+
+/* Set the padding checkout card */
+
+.cart-checkout-card {
+    padding: 3%;
+}
+
 /* Set the style based on screen width */
 
 @media(max-width: 700px) {
@@ -132,11 +176,6 @@
     .rating-price-container {
         width: 100%;
     }
-}
-
-/* Style based on screen width with max of 600px */
-
-@media(max-width: 600px) {
     /* Show items/cart vertically in small screens */
     #items-checkout-container {
         flex-direction: column;
@@ -148,6 +187,7 @@
     /* Show the cart/checkout container with full screen width */
     .cart-checkout-container {
         width: 100%;
+        margin: auto;
     }
 }
 

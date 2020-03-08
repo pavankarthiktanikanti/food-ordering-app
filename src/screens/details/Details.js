@@ -1,10 +1,19 @@
-import { faCircle, faRupeeSign, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStopCircle } from '@fortawesome/fontawesome-free-regular';
+import { faCircle, faMinus, faPlus, faRupeeSign, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { withStyles } from '@material-ui/core';
+import { Fade, withStyles } from '@material-ui/core';
+import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
+import CloseIcon from '@material-ui/icons/Close';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import React, { Component } from 'react';
 import 'typeface-roboto';
 import Header from '../../common/Header';
@@ -34,6 +43,16 @@ const styles = theme => ({
     /* Set the margin for the add icon (plus symbol) */
     addIcon: {
         marginLeft: '4%'
+    },
+    /* Style the plus and minus buttons on cart section */
+    plusMinusBtn: {
+        margin: '0px 10px',
+        padding: '10px',
+        color: 'black',
+        borderRadius: 0,
+        '&:hover': {
+            'background-color': 'rgb(248, 244, 8)'
+        }
     }
 });
 
@@ -45,7 +64,13 @@ class Details extends Component {
          */
         this.state = {
             isUserLoggedIn: sessionStorage.getItem('access-token') != null,
-            restaurantDetails: {}
+            restaurantDetails: {},
+            showSnackbar: false,
+            snackBarMsg: '',
+            transition: Fade,
+            cartItems: [],
+            noOfItemsInCart: 0,
+            cartTotalAmount: 0
         };
     }
 
@@ -91,6 +116,61 @@ class Details extends Component {
         // Access the get restaurant api of backend to get the details based on restaurantID
         xhr.open('GET', this.props.baseUrl + '/restaurant/' + restaurantID);
         xhr.send(data);
+    }
+
+    /**
+     * This will be called when the add button is clicked beside the item in menu
+     * adds the item to cart, updates the quantity if the item is already in cart
+     */
+    addItemClickHandler = (item) => {
+
+        let cartItems = this.state.cartItems;
+        let noOfItemsInCart = this.state.noOfItemsInCart;
+        let isItemAlreadyInCart = false;
+
+        /**
+         * Search for existing cart items, if found, update the quantity and price
+         */
+        cartItems.forEach(cartItem => {
+            if (cartItem.id === item.id) {
+                cartItem.quantity++;
+                cartItem.totalItemPrice = cartItem.price * cartItem.quantity;
+                isItemAlreadyInCart = true;
+            }
+        });
+        // If item is added for the first time
+        if (!isItemAlreadyInCart) {
+            let cartItem = {
+                id: item.id,
+                item_name: item.item_name,
+                price: item.price,
+                item_type: item.item_type,
+                quantity: 1,
+                totalItemPrice: item.price
+            }
+            cartItems.push(cartItem);
+        }
+        noOfItemsInCart++;
+        // Setting the state variable to show the Snackbar
+        this.setState({
+            showSnackbar: true,
+            snackBarMsg: 'Item added to cart!',
+            cartItems: cartItems,
+            noOfItemsInCart: noOfItemsInCart,
+            cartTotalAmount: this.state.cartTotalAmount + item.price
+        });
+    }
+
+    /**
+     * Handle Close event on Snackbar, if close event is triggered, hide it
+     */
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        // Setting the state variable to hide the Snackbar
+        this.setState({ showSnackbar: false, snackBarMsg: '' });
     }
 
     render() {
@@ -164,7 +244,7 @@ class Details extends Component {
                                         {category.item_list.map(item => (
                                             <div className='menu-item-section' key={item.id}>
                                                 {/**
-                                                 * Show the circle based on item time red(non veg)/green(veg)
+                                                 * Show the circle based on item type red(non veg)/green(veg)
                                                  */}
                                                 {'VEG' === item.item_type && <FontAwesomeIcon icon={faCircle} className='fa-circle-green' />}
                                                 {'NON_VEG' === item.item_type && <FontAwesomeIcon icon={faCircle} className='fa-circle-red' />}
@@ -176,19 +256,106 @@ class Details extends Component {
                                                  * Show rupee symbol and the price of the item with a plus sign icon to add to cart
                                                  */}
                                                 <span className='item-price'>
-                                                    <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />{item.price}
+                                                    <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />{item.price.toFixed(2)}
                                                 </span>
-                                                <IconButton className={classes.addIcon}><AddIcon /></IconButton>
+                                                <IconButton className={classes.addIcon} onClick={() => this.addItemClickHandler(item)}><AddIcon /></IconButton>
                                             </div>
                                         ))}
                                     </div>
                                 ))}
                             </div>
                             <div className='cart-checkout-container'>
+                                <Card variant='outlined' className='cart-checkout-card'>
+                                    {/**
+                                     * Show the Cart icon with badge message and My Cart Card header
+                                     */}
+                                    <CardHeader
+                                        avatar={
+                                            <Badge color='primary' badgeContent={this.state.noOfItemsInCart} showZero invisible={false}>
+                                                <ShoppingCartIcon fontSize='large' />
+                                            </Badge>
+                                        }
+                                        title='My Cart'
+                                        titleTypographyProps={{
+                                            variant: 'h6'
+                                        }}>
+                                    </CardHeader>
 
+                                    <CardContent>
+                                        {this.state.cartItems.map(cartItem =>
+                                            <div className='menu-item-section' key={'cart' + cartItem.id}>
+                                                {/**
+                                                 * Show the stop circle O based on item type red(non veg)/green(veg)
+                                                 */}
+                                                {'VEG' === cartItem.item_type && <FontAwesomeIcon icon={faStopCircle} className='fa-circle-green' />}
+                                                {'NON_VEG' === cartItem.item_type && <FontAwesomeIcon icon={faStopCircle} className='fa-circle-red' />}
+
+                                                <Typography className={classes.menuItem}>
+                                                    <span className='cart-menu-item'>{cartItem.item_name}</span>
+                                                </Typography>
+                                                {/**
+                                                 * Show the quantity with plus and minus icons to increase or decrease quantity
+                                                 */}
+                                                <section className='item-quantity-section'>
+                                                    <IconButton className={classes.plusMinusBtn}>
+                                                        <FontAwesomeIcon icon={faMinus} className='plus-minus-icon' />
+                                                    </IconButton>
+                                                    <span>{cartItem.quantity}</span>
+                                                    <IconButton className={classes.plusMinusBtn}>
+                                                        <FontAwesomeIcon icon={faPlus} className='plus-minus-icon' />
+                                                    </IconButton>
+                                                </section>
+                                                {/**
+                                                 * Show rupee symbol and the price of the item with a plus sign icon to add to cart
+                                                 */}
+                                                <span className='cart-item-price'>
+                                                    <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
+                                                    {cartItem.totalItemPrice.toFixed(2)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {/**
+                                         * Show the Total amount of the cart, price of all items together
+                                         */}
+                                        <div className='total-amount'>
+                                            <Typography>
+                                                <span className='bold'>TOTAL AMOUNT</span>
+                                            </Typography>
+                                            <span className='bold'>
+                                                <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
+                                                {this.state.cartTotalAmount.toFixed(2)}
+                                            </span>
+                                        </div>
+                                    </CardContent>
+                                    <Button variant='contained' color='primary' fullWidth>Checkout</Button>
+                                </Card>
                             </div>
                         </div>
-                    </div >
+                        {/**
+                         * Show the snack bar at the bottom left of the page
+                         * auto hides after 10 seconds, close icon is added to close if needed before the auto hide timesout
+                         */}
+                        <Snackbar
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            open={this.state.showSnackbar}
+                            autoHideDuration={10000}
+                            onClose={this.handleClose}
+                            TransitionComponent={this.state.transition}
+                            message={this.state.snackBarMsg}
+                            action={
+                                /**
+                                 * Show close button to close the snackbar if the user wishes to
+                                 */
+                                <React.Fragment>
+                                    <IconButton size="small" aria-label="close" color="inherit" onClick={this.handleClose}>
+                                        <CloseIcon fontSize="small" />
+                                    </IconButton>
+                                </React.Fragment>
+                            } />
+                    </div>
                 }
             </div>
         )
