@@ -101,7 +101,6 @@ class Home extends Component {
                     that.setState({
                         restaurants: JSON.parse(this.response).restaurants
                     });
-                    console.log("checking restaurant" + that.state.restaurants);
                     if (that.state.restaurants.length === 0) {
                         that.setState({ dispMessage: 'dispBlock' })
                     } else {
