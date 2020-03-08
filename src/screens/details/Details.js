@@ -44,12 +44,20 @@ const styles = theme => ({
     addIcon: {
         marginLeft: '4%'
     },
-    /* Style the plus and minus buttons on cart section */
-    plusMinusBtn: {
+    /* Style the minus button on cart section */
+    minusBtn: {
         margin: '0px 10px',
         padding: '10px',
         color: 'black',
-        borderRadius: 0,
+        '&:hover': {
+            'background-color': 'rgb(248, 244, 8)'
+        }
+    },
+    /* Style the plus button on cart section */
+    plusBtn: {
+        margin: '0px 10px',
+        padding: '10px',
+        color: 'black',
         '&:hover': {
             'background-color': 'rgb(248, 244, 8)'
         }
@@ -63,7 +71,6 @@ class Details extends Component {
          * Set the state with all the required fields and values
          */
         this.state = {
-            isUserLoggedIn: sessionStorage.getItem('access-token') != null,
             restaurantDetails: {},
             showSnackbar: false,
             snackBarMsg: '',
@@ -159,6 +166,85 @@ class Details extends Component {
             noOfItemsInCart: noOfItemsInCart,
             cartTotalAmount: this.state.cartTotalAmount + item.price
         });
+    }
+
+    /**
+     * This method removes the item selected from the cart, decrements the quantity and 
+     * if quantity reaches zero, completely remove the item from cart and update the cart item
+     * price and total cart amount
+     */
+    removeItemFromCartHandler = (cartItem) => {
+        let snackBarMsg = '';
+        cartItem.quantity--;
+        // Quantity zero indicates, this items should be removed from cart completely
+        if (cartItem.quantity <= 0) {
+            let cartItems = this.state.cartItems;
+            // remove the item from the cart
+            cartItems.splice(cartItems.indexOf(cartItem), 1);
+            snackBarMsg = 'Item removed from cart!';
+        } else {
+            // update the total item price for the updated quantity
+            cartItem.totalItemPrice = cartItem.quantity * cartItem.price;
+            snackBarMsg = 'Item quantity decreased by 1!';
+        }
+        // Update the cart total amount, no of items count in cart
+        this.setState({
+            showSnackbar: true,
+            snackBarMsg: snackBarMsg,
+            noOfItemsInCart: this.state.noOfItemsInCart - 1,
+            cartTotalAmount: this.state.cartTotalAmount - cartItem.price
+        });
+    }
+
+    /**
+     * Increase the quantity of the items in cart, update the each cart item total price and
+     * total cart amount
+     */
+    addItemToCartHandler = (cartItem) => {
+        cartItem.quantity++;
+        cartItem.totalItemPrice = cartItem.quantity * cartItem.price;
+        this.setState({
+            showSnackbar: true,
+            snackBarMsg: 'Item quantity increased by 1!',
+            noOfItemsInCart: this.state.noOfItemsInCart + 1,
+            cartTotalAmount: this.state.cartTotalAmount + cartItem.price
+        });
+    }
+
+    /**
+     * Checkout with the items added to cart for placing an order
+     * validate if user is logged in or not, if not logged in show snackbar to login first
+     * if already logged in, then pass on the cart details to checkout screen
+     */
+    checkoutClickHandler = () => {
+
+        let isUserLoggedIn = sessionStorage.getItem('access-token') != null;
+        // Check if any items are added to cart or not
+        if (this.state.cartItems !== null && this.state.cartItems.length > 0) {
+            // Check if the customer is logged in or not
+            if (!isUserLoggedIn) {
+                this.setState({
+                    showSnackbar: true,
+                    snackBarMsg: 'Please login first!'
+                });
+            } else {
+                // If items are in cart and customer is logged in, proceed to checkout
+                this.props.history.push({
+                    pathname: '/checkout',
+                    state: {
+                        cartItems: this.state.cartItems,
+                        restaurantID: this.state.restaurantDetails.uuid
+                    }
+                });
+            }
+        }
+        else {
+            // Show snackbar message to add items to cart
+            this.setState({
+                showSnackbar: true,
+                snackBarMsg: 'Please add an item to your cart!'
+            });
+        }
     }
 
     /**
@@ -272,7 +358,7 @@ class Details extends Component {
                                     <CardHeader
                                         avatar={
                                             <Badge color='primary' badgeContent={this.state.noOfItemsInCart} showZero invisible={false}>
-                                                <ShoppingCartIcon fontSize='large' />
+                                                <ShoppingCartIcon fontSize='default' />
                                             </Badge>
                                         }
                                         title='My Cart'
@@ -297,12 +383,12 @@ class Details extends Component {
                                                  * Show the quantity with plus and minus icons to increase or decrease quantity
                                                  */}
                                                 <section className='item-quantity-section'>
-                                                    <IconButton className={classes.plusMinusBtn}>
-                                                        <FontAwesomeIcon icon={faMinus} className='plus-minus-icon' />
+                                                    <IconButton className={classes.minusBtn} onClick={() => this.removeItemFromCartHandler(cartItem)}>
+                                                        <FontAwesomeIcon icon={faMinus} className='plus-minus-icon' size='xs' />
                                                     </IconButton>
                                                     <span>{cartItem.quantity}</span>
-                                                    <IconButton className={classes.plusMinusBtn}>
-                                                        <FontAwesomeIcon icon={faPlus} className='plus-minus-icon' />
+                                                    <IconButton className={classes.plusBtn} onClick={() => this.addItemToCartHandler(cartItem)}>
+                                                        <FontAwesomeIcon icon={faPlus} className='plus-minus-icon' size='xs' />
                                                     </IconButton>
                                                 </section>
                                                 {/**
@@ -327,7 +413,7 @@ class Details extends Component {
                                             </span>
                                         </div>
                                     </CardContent>
-                                    <Button variant='contained' color='primary' fullWidth>Checkout</Button>
+                                    <Button variant='contained' color='primary' onClick={this.checkoutClickHandler} fullWidth>Checkout</Button>
                                 </Card>
                             </div>
                         </div>
