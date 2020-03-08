@@ -103,6 +103,15 @@ class Home extends Component {
         }
     }
 
+    /** 
+     * This method will be used to redirect to details page 
+     * depeding upon the restaurant which is clicked
+     * 'restaurantId' is uuid of restaurant which is clicked
+     */
+    cardClickHandler = (restaurantId) => {
+        this.props.history.push("/restaurant/" + restaurantId);
+    }
+
     render() {
         const { classes } = this.props;
         let rdata = this.state.restaurants;
@@ -114,7 +123,7 @@ class Home extends Component {
                         {rdata !== [] && rdata !== null && rdata.map(restaurant => (
                             <Grid container item key={restaurant.id} className={classes.root} xs={6}
                                 sm={6} lg={3} >
-                                <Card>
+                                <Card onClick={() => this.cardClickHandler(restaurant.id)}>
                                     <CardActionArea>
                                         <CardContent>
                                             <div>
