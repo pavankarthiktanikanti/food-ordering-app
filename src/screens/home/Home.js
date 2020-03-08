@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Header from '../../common/Header';
 import GridList from '@material-ui/core/GridList';
 import Grid from '@material-ui/core/Grid';
-import GridListTile from '@material-ui/core/GridListTile';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -22,7 +21,7 @@ const styles = theme => ({
     },
     /** set the style for card text */
     cardText: {
-        padding: '7%'
+        padding: '7%',
     },
     /** set the style for ctaegories dispalyed on a card */
     categories: {
@@ -37,7 +36,7 @@ const styles = theme => ({
     },
     /** set style for rating box dispalyed in the crad */
     ratingBox: {
-        backgroundColor: '#ffd966',
+        backgroundColor: '#eec64f',
         color: 'white',
         padding: '2%',
         fontSize: 'x-small',
@@ -110,43 +109,42 @@ class Home extends Component {
         return (
             <div>
                 <Header pageId='home' baseUrl={this.props.baseUrl} searchBoxChangeHandler={this.searchBoxChangeHandler} />
-                <div className="home-container">
-                    <GridList cellHeight={"auto"} cols={4}>
+                <div>
+                    <GridList cellHeight={"auto"} spacing={16} style={{ margin: '7px 14px' }}>
                         {rdata !== [] && rdata !== null && rdata.map(restaurant => (
-                            <GridListTile key={restaurant.id} >
-                                <Grid container className={classes.root} >
-                                    <Card >
-                                        <CardActionArea>
-                                            <CardContent>
+                            <Grid container item key={restaurant.id} className={classes.root} xs={6}
+                                sm={6} lg={3} >
+                                <Card>
+                                    <CardActionArea>
+                                        <CardContent>
+                                            <div>
+                                                <img src={restaurant.photo_URL} className={classes.image} alt={restaurant.id} />
+                                            </div>
+                                            <div className={classes.cardText} >
+                                                <Typography gutterBottom variant="h5" component="h2">
+                                                    {restaurant.restaurant_name}
+                                                </Typography>
+                                                <Typography variant="body2" component="p" className={classes.categories}>
+                                                    {restaurant.categories}
+                                                </Typography>
                                                 <div>
-                                                    <img src={restaurant.photo_URL} className={classes.image} alt={restaurant.id} />
-                                                </div>
-                                                <div className={classes.cardText}>
-                                                    <Typography gutterBottom variant="h4" component="h2">
-                                                        {restaurant.restaurant_name}
-                                                    </Typography>
-                                                    <Typography variant="body2" component="p" className={classes.categories}>
-                                                        {restaurant.categories}
-                                                    </Typography>
-                                                    <div>
-                                                        <span className={classes.ratingBox}>
-                                                            <FontAwesomeIcon icon={faStar} /> &nbsp;
+                                                    <span className={classes.ratingBox}>
+                                                        <FontAwesomeIcon icon={faStar} /> &nbsp;
                                                     <span> {restaurant.customer_rating}</span>
-                                                            &nbsp;
+                                                        &nbsp;
                                                     ({restaurant.number_customers_rated})
                                                 </span>
-                                                        <span className={classes.rupees}>
-                                                            <FontAwesomeIcon icon={faRupeeSign} />
-                                                            {restaurant.average_price}
-                                                            &nbsp; for two
+                                                    <span className={classes.rupees}>
+                                                        <FontAwesomeIcon icon={faRupeeSign} />
+                                                        {restaurant.average_price}
+                                                        &nbsp; for two
                                                 </span>
-                                                    </div>
-                                                </div >
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>
-                            </GridListTile>
+                                                </div>
+                                            </div >
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
                         ))}
                     </GridList>
                 </div>
