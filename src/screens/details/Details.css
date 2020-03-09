@@ -48,6 +48,118 @@
     max-width: 150px;
 }
 
+/* Set style flex and space between elements for items/checkout frame */
+
+#items-checkout-container {
+    display: flex;
+    padding: 3% 5%;
+    justify-content: space-between;
+}
+
+/* Set the width of items list */
+
+.items-container {
+    width: 50%;
+    margin-right: 10%;
+}
+
+/* Style the category name displayed in all caps */
+
+.category-name {
+    text-transform: uppercase;
+    font-size: smaller;
+    font-weight: 500;
+    color: gray;
+}
+
+/* Style the menu item with center alignment */
+
+.menu-item-section {
+    display: flex;
+    align-items: center;
+}
+
+/* Style the circle icon for Veg item */
+
+.fa-circle-green {
+    color: rgb(18, 136, 53);
+    font-size: large;
+}
+
+/* Style the circle icon for Non Veg item */
+
+.fa-circle-red {
+    color: rgb(180, 36, 16);
+    font-size: large;
+}
+
+/* Show menu items in Pascal Case */
+
+.menu-item {
+    text-transform: capitalize;
+}
+
+/* Set the margin for price displayed in the menu */
+
+.item-price {
+    margin-left: auto;
+}
+
+/* Set the margin for rupee icon displayed in the menu */
+
+.fa-rupee {
+    margin-right: 4px;
+}
+
+/* Set the width for cart/checkout frame */
+
+.cart-checkout-container {
+    width: 50%;
+}
+
+/* Style the menu item in cart */
+
+.cart-menu-item {
+    text-transform: capitalize;
+    color: gray;
+}
+
+/* Style the quantity section in cart */
+
+.item-quantity-section {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+/* Style the price section in the cart */
+
+.cart-item-price {
+    margin-left: 8%;
+    float: right;
+    color: gray;
+}
+
+/* Style the total amount in the cart section */
+
+.total-amount {
+    display: flex;
+    margin: 2% 0%;
+    justify-content: space-between;
+}
+
+/* bold font */
+
+.bold {
+    font-weight: bold;
+}
+
+/* Set the padding checkout card */
+
+.cart-checkout-card {
+    padding: 3%;
+}
+
 /* Set the style based on screen width */
 
 @media(max-width: 700px) {
@@ -64,11 +176,25 @@
     .rating-price-container {
         width: 100%;
     }
+    /* Show items/cart vertically in small screens */
+    #items-checkout-container {
+        flex-direction: column;
+    }
+    /* Show the menu items with full screen width */
+    .items-container {
+        width: 100%;
+    }
+    /* Show the cart/checkout container with full screen width */
+    .cart-checkout-container {
+        width: 100%;
+        margin: auto;
+    }
 }
 
 /* Set the style for low screen width like small mobiles */
 
 @media(max-width:350px) {
+    /* Set the size of restaurant image for small screens */
     .restaurant-img {
         max-width: 250px;
         width: auto;
