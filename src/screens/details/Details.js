@@ -233,7 +233,8 @@ class Details extends Component {
                     pathname: '/checkout',
                     state: {
                         cartItems: this.state.cartItems,
-                        restaurantID: this.state.restaurantDetails.uuid
+                        restaurantID: this.state.restaurantDetails.uuid,
+                        restaurantName: this.state.restaurantDetails.restaurantName
                     }
                 });
             }
