@@ -1,14 +1,18 @@
-import React, { Component } from "react";
-import Header from '../../common/Header';
-import GridList from '@material-ui/core/GridList';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core';
 import { faRupeeSign, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { withStyles } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Grid from '@material-ui/core/Grid';
+import GridList from '@material-ui/core/GridList';
+import Typography from '@material-ui/core/Typography';
+import React, { Component } from "react";
+import 'typeface-roboto';
+import Header from '../../common/Header';
+import './Home.css';
 
 /**
  * Custom Styles used to customize material ui components
@@ -21,40 +25,44 @@ const styles = theme => ({
     },
     /** set the style for card text */
     cardText: {
-        padding: '7%',
+        padding: '2%',
     },
-    /** set the style for ctaegories dispalyed on a card */
+    /** set the style for categories dispalyed on a card */
     categories: {
-        fontSize: 'large',
+        fontSize: 'initial',
         marginTop: '16%',
         marginBottom: '10%'
     },
-    /** set style for the image displayed on the card */
-    image: {
-        height: '200px',
-        width: '100%'
+    /** Style the card bottom section with margin and display flex */
+    ratingAndPrice: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        whiteSpace: 'no-wrap',
+        margin: '10px'
     },
-    /** set style for rating box dispalyed in the crad */
+    /** set style for rating box dispalyed in the card */
     ratingBox: {
-        backgroundColor: '#eec64f',
+        backgroundColor: 'rgb(234, 204, 94)',
         color: 'white',
-        padding: '2%',
-        fontSize: 'x-small',
-        fontWeight: 'bold'
-    },
-    /** set style for rupees displayed in card*/
-    rupees: {
-        float: 'right',
+        padding: '10px 15px',
+        whiteSpace: 'nowrap',
         fontSize: 'small',
+        width: '100px',
+        display: 'flex',
+        justifyContent: 'center'
+    },
+    /** Set the bottom margin for the star icon */
+    faStarIcon: {
+        marginBottom: '1px'
+    },
+    /** set style for rupees displayed in card */
+    rupees: {
+        marginRight: '6px',
+        fontSize: 'small',
+        whiteSpace: 'nowrap'
     }
 })
-
-/**
- * Style the home screen
- */
-const homeStyles = {
-    margin: '22px'
-}
 
 class Home extends Component {
 
@@ -73,7 +81,9 @@ class Home extends Component {
         let xhrData = new XMLHttpRequest();
         let restaurants = null;
         xhrData.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
+            // If the response from server is success
+            if (this.readyState === 4 && this.status === 200) {
+                // Set the restaurants data to state
                 that.setState({
                     restaurants: JSON.parse(this.response).restaurants
                 });
@@ -91,27 +101,32 @@ class Home extends Component {
      */
     searchBoxChangeHandler = (searchValue) => {
         this.setState({ search: searchValue })
-        //this will search restaurant ,if searchValue is non-empty
+        //this will search restaurant, if searchValue is non-empty
         if (searchValue !== '' && searchValue !== null) {
             let that = this;
             let xhrData = new XMLHttpRequest();
             let restaurants = null;
             xhrData.addEventListener("readystatechange", function () {
-                if (this.readyState === 4) {
+                // If the response from server is success
+                if (this.readyState === 4 && this.status === 200) {
+                    // Set the restaurants data to state
                     that.setState({
                         restaurants: JSON.parse(this.response).restaurants
                     });
-                    if (that.state.restaurants.length === 0) {
-                        that.setState({ dispMessage: 'dispBlock' })
+                    // If there are no restaurants matching with the search, show message as  No Restaurant found
+                    if (that.state.restaurants !== null && that.state.restaurants.length === 0) {
+                        that.setState({ dispMessage: 'dispBlock' });
                     } else {
-                        that.setState({ dispMessage: 'dispNone' })
+                        that.setState({ dispMessage: 'dispNone' });
                     }
                 }
             });
+            // Call the back end endpoint with the search value
             xhrData.open("GET", this.props.baseUrl + '/restaurant/name/' + searchValue);
             xhrData.send(restaurants);
 
         } else {
+            // If the search value is cleared, set the complete list of restaurants by calling get restaurant
             this.UNSAFE_componentWillMount();
         }
     }
@@ -127,43 +142,62 @@ class Home extends Component {
 
     render() {
         const { classes } = this.props;
-        let rdata = this.state.restaurants;
+        let restaurantsData = this.state.restaurants;
         return (
             <div>
                 <Header pageId='home' baseUrl={this.props.baseUrl} searchBoxChangeHandler={this.searchBoxChangeHandler} />
-                <div style={homeStyles}>
-                    <GridList cellHeight={"auto"} spacing={16} >
-                        {rdata !== [] && rdata !== null && rdata.map(restaurant => (
-                            <Grid container item key={restaurant.id} className={classes.root} xs={6}
-                                sm={6} lg={3} >
+                <div className='grid-container'>
+                    <GridList cellHeight={"auto"} spacing={20} >
+                        {restaurantsData !== [] && restaurantsData !== null && restaurantsData.map(restaurant => (
+                            /**
+                             * Grid container with resposive screen support, display cards inside grid based on
+                             * screen size, very small screen size - 1, small screen width - 2, medium screen width - 3
+                             * and desktop and above screens 4 cards will be shown
+                             */
+                            <Grid container item key={restaurant.id} className={classes.root} xs={12}
+                                sm={6} md={4} lg={3} >
+                                {/**
+                                 * The Grid card with the image of restaurant, categories, rating and average price shown
+                                 */}
                                 <Card onClick={() => this.cardClickHandler(restaurant.id)}>
                                     <CardActionArea>
+                                        {/**
+                                         * Image of the restaurant
+                                         */}
+                                        <CardMedia
+                                            component="img"
+                                            alt={restaurant.restaurant_name}
+                                            height="175"
+                                            image={restaurant.photo_URL}
+                                            title={restaurant.restaurant_name}
+                                        />
+                                        {/**
+                                         * The restaurant details, like name and categories of food offered
+                                         */}
                                         <CardContent>
-                                            <div>
-                                                <img src={restaurant.photo_URL} className={classes.image} alt={restaurant.id} />
-                                            </div>
                                             <div className={classes.cardText} >
                                                 <Typography gutterBottom variant="h5" component="h2">
                                                     {restaurant.restaurant_name}
                                                 </Typography>
-                                                <Typography variant="body2" component="p" className={classes.categories}>
+                                                <Typography variant="subtitle2" component="p" className={classes.categories}>
                                                     {restaurant.categories}
                                                 </Typography>
-                                                <div>
-                                                    <span className={classes.ratingBox}>
-                                                        <FontAwesomeIcon icon={faStar} /> &nbsp;
-                                                    <span> {restaurant.customer_rating}</span>
-                                                        &nbsp;
-                                                    ({restaurant.number_customers_rated})
-                                                </span>
-                                                    <span className={classes.rupees}>
-                                                        <FontAwesomeIcon icon={faRupeeSign} />
-                                                        {restaurant.average_price}
-                                                        &nbsp; for two
-                                                </span>
-                                                </div>
-                                            </div >
+                                            </div>
                                         </CardContent>
+                                        {/**
+                                         * The bottom section of the card showing the number of ratings and average price for twoo
+                                         */}
+                                        <CardActions className={classes.ratingAndPrice}>
+                                            <span className={classes.ratingBox}>
+                                                <FontAwesomeIcon icon={faStar} className='faStarIcon' /> &nbsp;
+                                                    <span> {restaurant.customer_rating}</span>&nbsp;({restaurant.number_customers_rated})
+                                                </span>
+                                            <Typography className={classes.rupees}>
+                                                <FontAwesomeIcon icon={faRupeeSign} />
+                                                {restaurant.average_price}
+                                                &nbsp;for two
+                                                </Typography>
+                                        </CardActions>
                                     </CardActionArea>
                                 </Card>
                             </Grid>
