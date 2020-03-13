@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Header from '../../common/Header';
 
 class Checkout extends Component {
     render() {
@@ -9,6 +10,7 @@ class Checkout extends Component {
                  * this.props.location.state.cartItems
                  * this.props.location.state.restaurantID
                  */}
+                <Header pageId='checkout' baseUrl={this.props.baseUrl} />
             </div>
         );
     }
