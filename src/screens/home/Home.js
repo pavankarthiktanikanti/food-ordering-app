@@ -27,7 +27,7 @@ const styles = theme => ({
     cardText: {
         padding: '2%',
     },
-    /** set the style for categories dispalyed on a card */
+    /** set the style for categories displayed on a card */
     categories: {
         fontSize: 'initial',
         marginTop: '16%',
@@ -41,7 +41,7 @@ const styles = theme => ({
         whiteSpace: 'no-wrap',
         margin: '10px'
     },
-    /** set style for rating box dispalyed in the card */
+    /** set style for rating box displayed in the card */
     ratingBox: {
         backgroundColor: 'rgb(234, 204, 94)',
         color: 'white',
@@ -185,7 +185,7 @@ class Home extends Component {
                                             </div>
                                         </CardContent>
                                         {/**
-                                         * The bottom section of the card showing the number of ratings and average price for twoo
+                                         * The bottom section of the card showing the number of ratings and average price for two
                                          */}
                                         <CardActions className={classes.ratingAndPrice}>
                                             <span className={classes.ratingBox}>
