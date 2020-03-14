@@ -45,7 +45,7 @@
 
 .caption-text {
     color: grey;
-    max-width: 150px;
+    max-width: 125px;
 }
 
 /* Set style flex and space between elements for items/checkout frame */
@@ -111,10 +111,24 @@
     margin-right: 4px;
 }
 
+/** Set no wrap for white spaces */
+
+.wrap-white-space {
+    white-space: nowrap;
+}
+
 /* Set the width for cart/checkout frame */
 
 .cart-checkout-container {
     width: 50%;
+}
+
+/** Style the menu items added to cart section */
+
+.cart-menu-item-section {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 5px;
 }
 
 /* Style the menu item in cart */
@@ -130,21 +144,24 @@
     display: flex;
     align-items: center;
     margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-/* Style the price section in the cart */
+/* Style the price section in the cart with margin, width and alignment */
 
 .cart-item-price {
-    margin-left: 8%;
-    float: right;
+    margin-left: auto;
     color: gray;
+    min-width: 80px;
+    text-align: right;
 }
 
-/* Style the total amount in the cart section */
+/* Style the total amount in the cart section with flex display and margin */
 
 .total-amount {
     display: flex;
-    margin: 2% 0%;
+    margin: 5% 0% 0% 0%;
     justify-content: space-between;
 }
 
