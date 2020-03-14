@@ -88,7 +88,8 @@ class Details extends Component {
             transition: Fade,
             cartItems: [],
             noOfItemsInCart: 0,
-            cartTotalAmount: 0
+            cartTotalAmount: 0,
+            isBadgeVisible: true
         };
     }
 
@@ -176,6 +177,16 @@ class Details extends Component {
             cartItems: cartItems,
             noOfItemsInCart: noOfItemsInCart,
             cartTotalAmount: this.state.cartTotalAmount + item.price
+        });
+    }
+
+    /**
+     * Toggle the badge visibility so as not to overlap with the model, when user is not logged in
+     * hide the badge on cart when the modal is opened and viceversa 
+     */
+    toggleBadgeVisibility = () => {
+        this.setState({
+            isBadgeVisible: !this.state.isBadgeVisible
         });
     }
 
@@ -275,7 +286,7 @@ class Details extends Component {
         const { classes } = this.props;
         return (
             <div>
-                <Header pageId='details' baseUrl={this.props.baseUrl} />
+                <Header pageId='details' baseUrl={this.props.baseUrl} toggleBadgeVisibility={this.toggleBadgeVisibility} />
                 {/**
                  * Show the complete page with details only if server responds with data of restaurant
                  * i.e. if uuid is not valid, then no data received from server and nothing will be displayed
