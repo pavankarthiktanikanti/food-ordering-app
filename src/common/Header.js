@@ -133,6 +133,10 @@ class Header extends Component {
      * reset the field values for the modal tabs
      */
     loginClickHandler = () => {
+        // Hide/unhide the badge in details page
+        if (this.props.toggleBadgeVisibility) {
+            this.props.toggleBadgeVisibility();
+        }
         this.setState({
             modalIsOpen: true,
             value: 0,
@@ -163,6 +167,10 @@ class Header extends Component {
      * Hides the Modal and shows the page
      */
     closeModalHandler = () => {
+        // Hide/unhide the badge in details page
+        if (this.props.toggleBadgeVisibility) {
+            this.props.toggleBadgeVisibility();
+        }
         this.setState({ modalIsOpen: false });
     }
 
