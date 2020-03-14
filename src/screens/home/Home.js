@@ -26,12 +26,15 @@ const styles = theme => ({
     /** set the style for card text */
     cardText: {
         padding: '2%',
+        minHeight: '145px',
+        '@media(max-width:599px)': {
+            minHeight: 'auto'
+        }
     },
     /** set the style for categories displayed on a card */
     categories: {
         fontSize: 'initial',
-        marginTop: '16%',
-        marginBottom: '10%'
+        marginTop: '16%'
     },
     /** Style the card bottom section with margin and display flex */
     ratingAndPrice: {
