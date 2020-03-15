@@ -4,6 +4,7 @@ import Checkout from '../screens/checkout/Checkout';
 import Details from '../screens/details/Details';
 import Home from '../screens/home/Home';
 import Profile from '../screens/profile/Profile';
+import { Redirect } from 'react-router';
 
 /**
  * Controller Component for handling the URL Paths and routing/loading respective Component
@@ -28,7 +29,7 @@ class Controller extends Component {
           <Route exact path='/' render={(props) => <Home {...props} baseUrl={this.baseUrl} />} />
           <Route exact path='/profile' render={(props) => <Profile {...props} baseUrl={this.baseUrl} />} />
           <Route exact path='/restaurant/:restaurantID' render={(props) => <Details {...props} baseUrl={this.baseUrl} />} />
-          <Route exact path='/checkout' render={(props) => <Checkout {...props} baseUrl={this.baseUrl} />} />
+          <Route exact path='/checkout' render={(props) => (sessionStorage.getItem('access-token') !== null ? <Checkout {...props} baseUrl={this.baseUrl} /> : <Redirect to='/' />)} />
         </div>
       </Router>
     )

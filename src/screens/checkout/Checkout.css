@@ -1,0 +1,214 @@
+/** Style the checkout page container */
+
+.checkout-container {
+  display: flex;
+  flex-direction: row;
+  padding: 1%;
+}
+
+/** Set the width of stepper */
+
+.stepper-section {
+  width: 70%;
+}
+
+/** sets the margin for tab container */
+
+.address-tab-container {
+  /* display: flex; */
+  margin: 2%;
+}
+
+/** Set width and margin for each address in grid */
+
+.grid-address {
+  margin: 10px;
+  padding: 10px;
+  max-width: 200px;
+}
+
+/** Set the color/background for the tabs */
+
+.address-tabs {
+  background-color: #3f51b5;
+  color: white;
+}
+
+/** Set the padding and alignment for tab container */
+
+.address-tab-container {
+  padding: 0px 0px 10px 0px;
+  text-align: left;
+}
+
+/** Set the display as none, in order to hide the element */
+
+.dispNone {
+  display: none;
+}
+
+/** Set the display as none, in order to show a hidden element */
+
+.dispBlock {
+  display: block;
+}
+
+/** Set the color red for Error Field validation messages */
+
+.red {
+  color: red;
+}
+
+/** Set the max height to show only 4 options in the state select box */
+
+.MuiMenu-list {
+  max-height: 180px;
+}
+
+/** Set the width of the cart Summary */
+
+.checkout-cart-container {
+  width: 30%;
+}
+
+/** Set the style for checkout card */
+
+.checkout-cart-card {
+  padding: 10px;
+  margin-top: 20px;
+}
+
+/** Set the color of restaurant name on summary card */
+
+.checkout-restaurant-name {
+  color: #555555;
+}
+
+/** Style the menu items on Checkout summary card */
+
+.checkout-menu-item-section {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+/** Style for color gray */
+
+.color-gray {
+  color: gray;
+}
+
+/* Style the circle icon for Veg item */
+
+.fa-circle-green {
+  color: rgb(18, 136, 53);
+  font-size: large;
+}
+
+/* Style the circle icon for Non Veg item */
+
+.fa-circle-red {
+  color: rgb(180, 36, 16);
+  font-size: large;
+}
+
+/* Style the menu item in cart */
+
+.checkout-menu-item {
+  text-transform: capitalize;
+}
+
+/* Style the quantity section in cart */
+
+.checkout-item-quantity-section {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-left: auto;
+}
+
+/* Set the margin for price displayed in the menu */
+
+.checkout-item-price {
+  margin-left: auto;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* Style the total amount in the cart section with flex display and margin */
+
+.checkout-total-amount {
+  display: flex;
+  margin: 5% 0%;
+  justify-content: space-between;
+}
+
+/* Set the margin for rupee icon displayed in the menu */
+
+.fa-rupee {
+  margin-right: 4px;
+}
+
+/** Set no wrap for white spaces */
+
+.wrap-white-space {
+  white-space: nowrap;
+}
+
+.discount-item-text-checkout, .cart-item-price-checkout {
+  color: gray;
+}
+
+/**
+ * this is used to style Coupen Content area containg text fied and apply button
+ */
+
+.coupon-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/** this is used to style div showing sub Total and Discount */
+
+.discount-text-container {
+  display: flex;
+  align-items: baseline;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 10px 0px;
+}
+
+/** this is used to style the text in div showing sub Total and Discount*/
+
+.discount-text {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* Set the style for low screen width like small mobiles */
+
+@media (max-width: 800px) {
+  /* Set the size of restaurant image for small screens */
+  .checkout-container {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    padding: 1%;
+  }
+  /** Set the stepper section width to full on small screens */
+  .stepper-section {
+    width: 100%;
+  }
+  /** Set the checkout cart width to full view on small screens */
+  .checkout-cart-container {
+    width: 95%;
+    margin: auto;
+  }
+}
