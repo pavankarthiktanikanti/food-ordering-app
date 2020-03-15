@@ -31,7 +31,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
  */
 const styles = theme => ({
     root: {
-        width: '100%',
+        width: '65%',
     },
     button: {
         marginTop: theme.spacing(1),
@@ -49,20 +49,19 @@ const styles = theme => ({
     rootGrid: {
         display: 'flex',
         flexWrap: 'no-wrap',
-        overflow: 'scroll',
+        overflowX: 'scroll',
         backgroundColor: theme.palette.background.paper,
     },
     gridList: {
         flexWrap: 'nowrap',
         // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
         transform: 'translateZ(0)',
-        width: '70%',
         height: '70%'
     },
     addressTabs: {
         backgroundColor: '#3f51b5',
         color: 'white',
-        width: '70%'
+        marginBottom: '1%'
     },
     redBorder: {
         border: '2px solid red',
@@ -84,14 +83,14 @@ const styles = theme => ({
         color: 'green'
     },
     grey: {
-        color: 'grey'
+        color: 'grey',
     },
     padding: {
         padding: '10px'
     },
     buttonMargin: {
         marginTop: '20px'
-    }
+    },
 });
 
 /**
@@ -100,7 +99,7 @@ const styles = theme => ({
  */
 const TabContainer = function (props) {
     return (
-        <Typography component='div' className='address-tab-container'>
+        <Typography component='div' className={styles.addressTabContainer}>
             {props.children}
         </Typography>
     );
@@ -343,10 +342,10 @@ class Checkout extends Component {
                      * city, state and pincode on selecting the New Address tab along with error field validation
                      * messages as helper texts
                      */}
-                    {this.state.value === 0 &&
+                    {this.state.value === 0 && this.state.customerAddresses.length !== 0 &&
                         <TabContainer>
                             <div className={classes.rootGrid}>
-                                <GridList className={classes.gridList} >
+                                <GridList className={classes.gridList} cols={3}>
                                     {this.state.customerAddresses.map((address, index) => (
                                         <Grid key={address.id} className={(this.state.addressIsSelected[index] === true ? classes.redBorder : classes.noBorder)}>
                                             <div className={classes.padding}>
@@ -365,6 +364,11 @@ class Checkout extends Component {
                                     ))}
                                 </GridList>
                             </div>
+                        </TabContainer>
+                    }
+                    {this.state.value === 0 && this.state.customerAddresses.length === 0 &&
+                        <TabContainer>
+                            <Typography variant="body1" className={classes.grey}>There are no saved addresses! You can save an address using the 'New Address' tab or using your ‘Profile’ menu option.</Typography>
                         </TabContainer>
                     }
                     {
