@@ -7,7 +7,6 @@ import StepContent from '@material-ui/core/StepContent';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -24,6 +23,11 @@ import GridList from '@material-ui/core/GridList';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { faStopCircle } from '@fortawesome/fontawesome-free-regular';
+import { faRupeeSign } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Card, CardContent, CardHeader, withStyles } from '@material-ui/core';
+import './Checkout.css';
 
 /**
  * Custom Styles used to customize material ui components
@@ -99,7 +103,7 @@ const styles = theme => ({
  */
 const TabContainer = function (props) {
     return (
-        <Typography component='div' className={styles.addressTabContainer}>
+        <Typography component='div' className="address-tab-container">
             {props.children}
         </Typography>
     );
@@ -108,8 +112,20 @@ const TabContainer = function (props) {
 
 class Checkout extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        let cartItems = null;
+        let restaurantID = null;
+        let restaurantName = null;
+        if (props.location.state) {
+            cartItems = props.location.state.cartItems;
+            restaurantID = props.location.state.restaurantID;
+            restaurantName = props.location.state.restaurantName;
+        } else {
+            cartItems = [];
+            restaurantID = '';
+            restaurantName = '';
+        }
         /**
          * Set the state with all the required fields and values
          */
@@ -120,7 +136,6 @@ class Checkout extends Component {
             customerAddresses: [],
             value: 0,
             steps: ['Delivery', 'Payment'],
-            cartTotalAmount: 0,
             states: [],
             buildingNo: '',
             buildingNoRequired: 'dispNone',
@@ -134,7 +149,11 @@ class Checkout extends Component {
             pincodeRequired: 'dispNone',
             invalidPincode: 'dispNone',
             addressIsSelected: [],
-            selectedAddress: false
+            selectedAddress: false,
+            cartItems: cartItems,
+            cartTotalAmount: 0,
+            restaurantID: restaurantID,
+            restaurantName: restaurantName,
         }
     }
 
@@ -505,55 +524,139 @@ class Checkout extends Component {
         }
     }
 
+    componentDidMount() {
+        if (this.state.cartItems) {
+            let cartTotalAmount = 0;
+            this.state.cartItems.forEach(cartItem => {
+                cartTotalAmount += cartItem.totalItemPrice;
+            });
+            this.setState({
+                cartTotalAmount: cartTotalAmount
+            });
+        }
+        let xhr = new XMLHttpRequest();
+        let thisComponent = this;
+        xhr.addEventListener('readystatechange', function () {
+            if (this.readyState === 4 && this.status === 200) {
+                let response = JSON.parse(this.responseText);
+                thisComponent.setState({ states: response.states });
+            }
+        });
+        xhr.open('GET', this.props.baseUrl + '/states');
+        xhr.send();
+    }
+
+
     render() {
+
         const { classes } = this.props;
 
         return (
-            <div>
+            <div >
                 {/**
                  * the data passed in to this component can be used using
                  * this.props.location.state.cartItems
                  * this.props.location.state.restaurantID
                  */}
                 <Header pageId='checkout' baseUrl={this.props.baseUrl} />
-                <div className={classes.root}>
-                    <Stepper activeStep={this.state.activeStep} orientation="vertical">
-                        {this.state.steps.map((label, index) => (
-                            <Step key={label} completed={index === 1 ? (this.state.selectedPaymentMode !== '' ? true : false) : (this.state.selectedAddress === true) ? true : false} >
-                                <StepLabel>{label}</StepLabel>
-                                <StepContent>
-                                    {this.getStepContent(index)}
-                                    <div className={classes.actionsContainer}>
-                                        <div className={classes.buttonMargin}>
-                                            <Button
-                                                disabled={this.state.activeStep === 0}
-                                                onClick={this.handleBack}
-                                                className={classes.button}
-                                            >
-                                                Back
+                <div className='checkout-conatiner'>
+                    <div className={classes.root}>
+                        <Stepper activeStep={this.state.activeStep} orientation="vertical">
+                            {this.state.steps.map((label, index) => (
+                                <Step key={label} completed={index === 1 ? (this.state.selectedPaymentMode !== '' ? true : false) : (this.state.selectedAddress === true) ? true : false} >
+                                    <StepLabel>{label}</StepLabel>
+                                    <StepContent>
+                                        {this.getStepContent(index)}
+                                        <div className={classes.actionsContainer}>
+                                            <div className={classes.buttonMargin}>
+                                                <Button
+                                                    disabled={this.state.activeStep === 0}
+                                                    onClick={this.handleBack}
+                                                    className={classes.button}
+                                                >
+                                                    Back
                   </Button>
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() => this.handleNext(index)}
-                                                className={classes.button}
-                                            >
-                                                {this.state.activeStep === this.state.steps.length - 1 ? 'Finish' : 'Next'}
-                                            </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => this.handleNext(index)}
+                                                    className={classes.button}
+                                                >
+                                                    {this.state.activeStep === this.state.steps.length - 1 ? 'Finish' : 'Next'}
+                                                </Button>
+                                            </div>
                                         </div>
+                                    </StepContent>
+                                </Step>
+                            ))}
+                        </Stepper>
+                        {this.state.activeStep === this.state.steps.length && this.state.selectedPaymentMode !== '' && (
+                            <Paper square elevation={0} className={classes.resetContainer}>
+                                <Typography>View the summary & place your order now!</Typography>
+                                <Button onClick={this.handleReset} className={classes.button}>
+                                    Change
+                        </Button>
+                            </Paper>
+                        )}
+                    </div>
+                    <div className='cart-checkout-container'>
+                        <Card variant='outlined' className='cart-checkout-card'>
+                            {/**
+                                     * Show the Cart icon with badge message and My Cart Card header
+                                     */}
+                            <CardHeader
+                                title='Summary'
+                                titleTypographyProps={{
+                                    variant: 'h5'
+                                }}>
+                            </CardHeader>
+
+                            <CardContent>
+                                <Typography variant='body1' component='p' gutterBottom style={{ fontSize: 'large', color: 'grey', fontWeight: 500 }}>
+                                    {this.state.restaurantName}
+                                </Typography>
+                                {this.state.cartItems.map(cartItem =>
+                                    <div className='cart-menu-item-section' key={'cart' + cartItem.id}>
+                                        {/**
+                                                 * Show the stop circle O based on item type red(non veg)/green(veg)
+                                                 */}
+                                        {'VEG' === cartItem.item_type && <FontAwesomeIcon icon={faStopCircle} className='fa-circle-green' />}
+                                        {'NON_VEG' === cartItem.item_type && <FontAwesomeIcon icon={faStopCircle} className='fa-circle-red' />}
+
+                                        <Typography className={classes.cartMenuItem}>
+                                            <span className='cart-menu-item'>{cartItem.item_name}</span>
+                                        </Typography>
+                                        {/**
+                                                 * Show the quantity with plus and minus icons to increase or decrease quantity
+                                                 */}
+                                        <section className='item-quantity-section'>
+                                            <span style={{ textAlign: 'center' }}>{cartItem.quantity}</span>
+                                        </section>
+                                        {/**
+                                                 * Show rupee symbol and the price of the item with a plus sign icon to add to cart
+                                                 */}
+                                        <span className='cart-item-price wrap-white-space'>
+                                            <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
+                                            {cartItem.totalItemPrice.toFixed(2)}
+                                        </span>
                                     </div>
-                                </StepContent>
-                            </Step>
-                        ))}
-                    </Stepper>
-                    {this.state.activeStep === this.state.steps.length && this.state.selectedPaymentMode !== '' && (
-                        <Paper square elevation={0} className={classes.resetContainer}>
-                            <Typography>View the summary & place your order now!</Typography>
-                            <Button onClick={this.handleReset} className={classes.button}>
-                                Change
-          </Button>
-                        </Paper>
-                    )}
+                                )}
+                                {/**
+                                         * Show the Total amount of the cart, price of all items together
+                                         */}
+                                <div className='total-amount'>
+                                    <Typography>
+                                        <span className='bold'>Net Amount</span>
+                                    </Typography>
+                                    <span className='bold wrap-white-space'>
+                                        <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
+                                        {this.state.cartTotalAmount.toFixed(2)}
+                                    </span>
+                                </div>
+                            </CardContent>
+                            <Button variant='contained' color='primary' onClick={this.checkoutClickHandler} fullWidth>Place Order</Button>
+                        </Card>
+                    </div>
                 </div>
             </div>
         );
