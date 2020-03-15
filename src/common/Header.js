@@ -135,7 +135,7 @@ class Header extends Component {
     loginClickHandler = () => {
         // Hide/unhide the badge in details page
         if (this.props.toggleBadgeVisibility) {
-            this.props.toggleBadgeVisibility();
+            this.props.toggleBadgeVisibility(false);
         }
         this.setState({
             modalIsOpen: true,
@@ -169,7 +169,7 @@ class Header extends Component {
     closeModalHandler = () => {
         // Hide/unhide the badge in details page
         if (this.props.toggleBadgeVisibility) {
-            this.props.toggleBadgeVisibility();
+            this.props.toggleBadgeVisibility(true);
         }
         this.setState({ modalIsOpen: false });
     }
