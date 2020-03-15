@@ -681,7 +681,7 @@ class Checkout extends Component {
     }
 
     /** this method will called when 'place order' button is clicked */
-    checkoutClickHandler = () => {
+    checkoutClickHandler = (event) => {
         let that = this;
         let xhrCheckOut = new XMLHttpRequest();
         var itemsInCart = [];
@@ -727,6 +727,8 @@ class Checkout extends Component {
                     showSnackbar: true,
                     snackBarMsg: 'Order placed successfully! Your order ID is ' + JSON.parse(this.response).id + '.'
                 });
+                // Delay the redirect to home after successful order
+                that.delayRedirect(event);
 
             }/** if the response from server is not successs */
             else if (this.readyState === 4 && this.status !== 201) {
@@ -742,6 +744,15 @@ class Checkout extends Component {
         xhrCheckOut.send(saveOrderRequest);
     }
 
+    /**
+     * Redirect to home after few seconds of placing the order successfully
+     */
+    delayRedirect = (event) => {
+        const { history: { push } } = this.props;
+        event.preventDefault();
+        setTimeout(() => push('/'), 10000);
+    }
+    
     /**
      * Handle Close event on Snackbar, if close event is triggered, hide it
      */

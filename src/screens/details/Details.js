@@ -184,9 +184,9 @@ class Details extends Component {
      * Toggle the badge visibility so as not to overlap with the model, when user is not logged in
      * hide the badge on cart when the modal is opened and viceversa 
      */
-    toggleBadgeVisibility = () => {
+    toggleBadgeVisibility = (isBadgeVisible) => {
         this.setState({
-            isBadgeVisible: !this.state.isBadgeVisible
+            isBadgeVisible: isBadgeVisible
         });
     }
 
