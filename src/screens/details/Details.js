@@ -38,29 +38,40 @@ const styles = theme => ({
     },
     /* Set the margin for menu item */
     menuItem: {
-        marginLeft: '2%'
+        marginLeft: '4%'
     },
     /* Set the margin for the add icon (plus symbol) */
     addIcon: {
         marginLeft: '4%'
     },
+    /* Set the margin and width of items added to cart */
+    cartMenuItem: {
+        marginLeft: '5%',
+        width: '40%'
+    },
     /* Style the minus button on cart section */
     minusBtn: {
-        margin: '0px 10px',
-        padding: '10px',
+        margin: '0px 8px',
+        padding: '5px',
         color: 'black',
+        fontSize: 'medium',
         '&:hover': {
             'background-color': 'rgb(248, 244, 8)'
         }
     },
     /* Style the plus button on cart section */
     plusBtn: {
-        margin: '0px 10px',
-        padding: '10px',
+        margin: '0px 8px',
+        padding: '5px',
         color: 'black',
+        fontSize: 'medium',
         '&:hover': {
             'background-color': 'rgb(248, 244, 8)'
         }
+    },
+    /* Set the scale of the badge on cart to show large badge */
+    badge: {
+        transform: 'scale(1.2) translate(50%, -50%)'
     }
 });
 
@@ -77,7 +88,8 @@ class Details extends Component {
             transition: Fade,
             cartItems: [],
             noOfItemsInCart: 0,
-            cartTotalAmount: 0
+            cartTotalAmount: 0,
+            isBadgeVisible: true
         };
     }
 
@@ -165,6 +177,16 @@ class Details extends Component {
             cartItems: cartItems,
             noOfItemsInCart: noOfItemsInCart,
             cartTotalAmount: this.state.cartTotalAmount + item.price
+        });
+    }
+
+    /**
+     * Toggle the badge visibility so as not to overlap with the model, when user is not logged in
+     * hide the badge on cart when the modal is opened and viceversa 
+     */
+    toggleBadgeVisibility = () => {
+        this.setState({
+            isBadgeVisible: !this.state.isBadgeVisible
         });
     }
 
@@ -264,7 +286,7 @@ class Details extends Component {
         const { classes } = this.props;
         return (
             <div>
-                <Header pageId='details' baseUrl={this.props.baseUrl} />
+                <Header pageId='details' baseUrl={this.props.baseUrl} toggleBadgeVisibility={this.toggleBadgeVisibility} />
                 {/**
                  * Show the complete page with details only if server responds with data of restaurant
                  * i.e. if uuid is not valid, then no data received from server and nothing will be displayed
@@ -342,7 +364,7 @@ class Details extends Component {
                                                 {/**
                                                  * Show rupee symbol and the price of the item with a plus sign icon to add to cart
                                                  */}
-                                                <span className='item-price'>
+                                                <span className='item-price wrap-white-space'>
                                                     <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />{item.price.toFixed(2)}
                                                 </span>
                                                 <IconButton className={classes.addIcon} onClick={() => this.addItemClickHandler(item)}><AddIcon /></IconButton>
@@ -358,7 +380,7 @@ class Details extends Component {
                                      */}
                                     <CardHeader
                                         avatar={
-                                            <Badge color='primary' badgeContent={this.state.noOfItemsInCart} showZero invisible={false}>
+                                            <Badge color='primary' badgeContent={this.state.noOfItemsInCart} showZero invisible={!this.state.isBadgeVisible} classes={{ anchorOriginTopRightRectangle: classes.badge }}>
                                                 <ShoppingCartIcon fontSize='default' />
                                             </Badge>
                                         }
@@ -370,14 +392,14 @@ class Details extends Component {
 
                                     <CardContent>
                                         {this.state.cartItems.map(cartItem =>
-                                            <div className='menu-item-section' key={'cart' + cartItem.id}>
+                                            <div className='cart-menu-item-section' key={'cart' + cartItem.id}>
                                                 {/**
                                                  * Show the stop circle O based on item type red(non veg)/green(veg)
                                                  */}
                                                 {'VEG' === cartItem.item_type && <FontAwesomeIcon icon={faStopCircle} className='fa-circle-green' />}
                                                 {'NON_VEG' === cartItem.item_type && <FontAwesomeIcon icon={faStopCircle} className='fa-circle-red' />}
 
-                                                <Typography className={classes.menuItem}>
+                                                <Typography className={classes.cartMenuItem}>
                                                     <span className='cart-menu-item'>{cartItem.item_name}</span>
                                                 </Typography>
                                                 {/**
@@ -385,17 +407,17 @@ class Details extends Component {
                                                  */}
                                                 <section className='item-quantity-section'>
                                                     <IconButton className={classes.minusBtn} onClick={() => this.removeItemFromCartHandler(cartItem)}>
-                                                        <FontAwesomeIcon icon={faMinus} className='plus-minus-icon' size='xs' />
+                                                        <FontAwesomeIcon icon={faMinus} className='plus-minus-icon' size='1x' />
                                                     </IconButton>
                                                     <span>{cartItem.quantity}</span>
                                                     <IconButton className={classes.plusBtn} onClick={() => this.addItemToCartHandler(cartItem)}>
-                                                        <FontAwesomeIcon icon={faPlus} className='plus-minus-icon' size='xs' />
+                                                        <FontAwesomeIcon icon={faPlus} className='plus-minus-icon' size='1x' />
                                                     </IconButton>
                                                 </section>
                                                 {/**
                                                  * Show rupee symbol and the price of the item with a plus sign icon to add to cart
                                                  */}
-                                                <span className='cart-item-price'>
+                                                <span className='cart-item-price wrap-white-space'>
                                                     <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
                                                     {cartItem.totalItemPrice.toFixed(2)}
                                                 </span>
@@ -408,7 +430,7 @@ class Details extends Component {
                                             <Typography>
                                                 <span className='bold'>TOTAL AMOUNT</span>
                                             </Typography>
-                                            <span className='bold'>
+                                            <span className='bold wrap-white-space'>
                                                 <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
                                                 {this.state.cartTotalAmount.toFixed(2)}
                                             </span>

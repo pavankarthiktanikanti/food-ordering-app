@@ -133,6 +133,10 @@ class Header extends Component {
      * reset the field values for the modal tabs
      */
     loginClickHandler = () => {
+        // Hide/unhide the badge in details page
+        if (this.props.toggleBadgeVisibility) {
+            this.props.toggleBadgeVisibility();
+        }
         this.setState({
             modalIsOpen: true,
             value: 0,
@@ -163,6 +167,10 @@ class Header extends Component {
      * Hides the Modal and shows the page
      */
     closeModalHandler = () => {
+        // Hide/unhide the badge in details page
+        if (this.props.toggleBadgeVisibility) {
+            this.props.toggleBadgeVisibility();
+        }
         this.setState({ modalIsOpen: false });
     }
 
@@ -232,7 +240,7 @@ class Header extends Component {
                         thisComponent.closeModalHandler();
                     } else if (this.status === 401) {
                         // Authentication failure from Server
-                        let response = JSON.parse(this.response);
+                        let response = JSON.parse(this.responseText);
                         if ('ATH-001' === response.code || 'ATH-002' === response.code) {
                             thisComponent.setState({ loginFailureMsg: response.message });
                         }
@@ -267,13 +275,17 @@ class Header extends Component {
         let xhr = new XMLHttpRequest();
         let thisComponent = this;
         xhr.addEventListener('readystatechange', function () {
-            if (this.readyState === 4 && this.status === 200) {
-                // on successful logout, remove the access token and user first name from session
-                sessionStorage.removeItem('userFirstName');
-                sessionStorage.removeItem('access-token');
-                thisComponent.setState({
-                    isUserLoggedIn: false
-                });
+            if (this.readyState === 4) {
+                // Api response can be success or authorization failure due to already logged out or session expiry
+                if (this.status === 200 || this.status === 403) {
+                    // on successful logout, remove the access token and user first name from session
+                    // If in case already logged out/session expired, still clear the token info in session
+                    sessionStorage.removeItem('userFirstName');
+                    sessionStorage.removeItem('access-token');
+                    thisComponent.setState({
+                        isUserLoggedIn: false
+                    });
+                }
             }
         });
         let data = null;
