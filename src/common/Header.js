@@ -99,7 +99,7 @@ class Header extends Component {
         this.state = {
             modalIsOpen: false,
             value: 0,
-            isUserLoggedIn: sessionStorage.getItem('access-token') != null,
+            isUserLoggedIn: sessionStorage.getItem('access-token') !== null,
             showMenu: false,
             showSnackbar: false,
             snackBarMsg: '',
@@ -285,6 +285,10 @@ class Header extends Component {
                     thisComponent.setState({
                         isUserLoggedIn: false
                     });
+                    // update the login status to redirect to home page from checkout page
+                    if (thisComponent.props.updateLoginStatus) {
+                        thisComponent.props.updateLoginStatus();
+                    }
                 }
             }
         });

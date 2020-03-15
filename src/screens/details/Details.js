@@ -240,7 +240,7 @@ class Details extends Component {
      */
     checkoutClickHandler = () => {
 
-        let isUserLoggedIn = sessionStorage.getItem('access-token') != null;
+        let isUserLoggedIn = sessionStorage.getItem('access-token') !== null;
         // Check if any items are added to cart or not
         if (this.state.cartItems !== null && this.state.cartItems.length > 0) {
             // Check if the customer is logged in or not
