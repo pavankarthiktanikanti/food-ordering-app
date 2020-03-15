@@ -187,7 +187,3 @@
   justify-content: space-between;
   flex-direction: row;
 }
-/** this is used to color TextField for Coupon code*/
-.MuiInputBase-input {
-  background-color: #ffffcc !important;
-}
