@@ -139,7 +139,7 @@ class Checkout extends Component {
         this.state = {
             activeStep: 0,
             paymentModes: [],
-            selectedPaymentMode: '',
+            selectedPaymentId: '',
             customerAddresses: [],
             value: 0,
             steps: ['Delivery', 'Payment'],
@@ -157,11 +157,13 @@ class Checkout extends Component {
             invalidPincode: 'dispNone',
             addressIsSelected: [],
             selectedAddress: false,
+            selectedAddressId: '',
             cartItems: cartItems,
             cartTotalAmount: 0,
             restaurantID: restaurantID,
             restaurantName: restaurantName,
             couponName: '',
+            couponId: '',
             discountPercentage: 0,
             discount: 0,
             subTotal: 0,
@@ -178,6 +180,7 @@ class Checkout extends Component {
          *  browser’s address bar without going through the details page than
          *  customer will be redirected to home page
          */
+        console.log("checking cart Item" + JSON.stringify(this.state.cartItems));
         if (this.props.location.state === undefined) {
             this.props.history.push({
                 pathname: '/'
@@ -237,7 +240,9 @@ class Checkout extends Component {
                 for (var i = 0; i < thisComponent.state.customerAddresses.length; i++) {
                     addressIsSelectedInitial[i] = false;
                 }
-                thisComponent.setState({ addressIsSelected: addressIsSelectedInitial })
+                thisComponent.setState({
+                    addressIsSelected: addressIsSelectedInitial
+                })
             }
         });
         xhrDataAddress.open("GET", this.props.baseUrl + '/address/customer');
@@ -331,8 +336,9 @@ class Checkout extends Component {
 
     /** this is used handle change when the checkbox for payment is selected */
     handleChangePayment = event => {
+        console.log("checking payment" + event.target.value);
         this.setState({
-            selectedPaymentMode: event.target.value
+            selectedPaymentId: event.target.value
         })
     };
 
@@ -362,8 +368,12 @@ class Checkout extends Component {
                 addressIsSelectedChange[j] = false;
             }
         }
-        this.setState({ addressIsSelected: addressIsSelectedChange })
-        this.setState({ selectedAddress: true })
+        console.log("selected address id" + this.state.customerAddresses[index].id);
+        this.setState({
+            addressIsSelected: addressIsSelectedChange,
+            selectedAddress: true,
+            selectedAddressId: this.state.customerAddresses[index].id
+        })
     }
 
     /** this method is used to get step content */
@@ -487,7 +497,7 @@ class Checkout extends Component {
                         <FormLabel>Select Mode of Payment</FormLabel>
                         <RadioGroup defaultValue={this.state.paymentModes.payment_name} aria-label="paymentModes" name="paymentModes" id='handleChangePayment' onChange={this.handleChangePayment}>
                             {this.state.paymentModes.map((payment) => (
-                                <FormControlLabel key={payment.id} value={payment.payment_name} control={<Radio />} label={payment.payment_name} checked={this.state.selectedPaymentMode === payment.payment_name} />))
+                                <FormControlLabel key={payment.id} value={payment.id} control={<Radio />} label={payment.payment_name} checked={this.state.selectedPaymentId === payment.id} />))
                             }
                         </RadioGroup>
                     </FormControl>)
@@ -514,7 +524,7 @@ class Checkout extends Component {
              * if the index 1 i.e payment mode than it will check if any payment 
              * mode is selected, then only it will finish the stepper selection
              */
-            if (this.state.selectedPaymentMode !== '') {
+            if (this.state.selectedPaymentId !== '') {
                 this.setState({ activeStep: prevActiveStep })
             }
         }
@@ -531,7 +541,7 @@ class Checkout extends Component {
 
     isStepCompleted = (index) => {
         if (index === 1) {
-            if (this.state.selectedPaymentMode !== '') {
+            if (this.state.selectedPaymentId !== '') {
                 return true;
             } else {
                 return false;
@@ -597,11 +607,12 @@ class Checkout extends Component {
                     subTotal: that.state.TotalAmountWithoutDicount,
                     discount: discountCal,
                     cartTotalAmount: priceAfterDiscount,
+                    couponId: JSON.parse(this.response).id,
                     showSnackbar: true,
                     snackBarMsg: 'Coupon applied Successfully!',
                 });
             }/** if invalid coupon is searched */
-            else if (this.readyState === 4 && this.status === 404) {
+            else if (this.readyState === 4 && this.status !== 201) {
                 console.log("coupon invalid" + JSON.parse(this.response).message);
                 that.setState({
                     showSnackbar: true,
@@ -609,6 +620,7 @@ class Checkout extends Component {
                     netAmount: that.state.TotalAmountWithoutDicount,
                     discountPercentage: 0,
                     discount: 0,
+                    couponId: '',
                     cartTotalAmount: that.state.TotalAmountWithoutDicount
                 });
 
@@ -619,6 +631,54 @@ class Checkout extends Component {
         xhrCoupon.setRequestHeader("Content-Type", "application/json");
         xhrCoupon.send(data);
 
+    }
+
+    /** this method will called when 'place order' button is clicked */
+    checkoutClickHandler = () => {
+        let that = this;
+        let xhrCheckOut = new XMLHttpRequest();
+        var itemsInCart = [];
+        for (var k = 0; k < this.state.cartItems; k++) {
+            var Item = {
+                "item_id": this.state.cartItems[k].id,
+                "price": this.state.cartItems[k].price,
+                "quantity": this.state.cartItems[k].quantity
+            }
+            itemsInCart[k] = Item;
+        }
+        // Create the json request for order Request
+        let saveOrderRequest = JSON.stringify({
+            "address_id": this.state.selectedAddressId,
+            "bill": 0,
+            "coupon_id": this.state.couponId,
+            "discount": 0,
+            "item_quantities": itemsInCart,
+            "payment_id": this.state.selectedPaymentId,
+            "restaurant_id": this.state.restaurantID
+        });
+        xhrCheckOut.addEventListener("readystatechange", function () {
+            // If the response from server is success
+            if (this.readyState === 4 && this.status === 201) {
+                // Set the percentage Discount to state
+                console.log("checking checkout data:" + this.response);
+                that.setState({
+                    showSnackbar: true,
+                    snackBarMsg: 'Order placed successfully! Your order ID is ' + JSON.parse(this.response).id
+                });
+
+            }/** if the response from server is not successs */
+            else if (this.readyState === 4 && this.status !== 201) {
+                console.log("coupon invalid" + this.response);
+                that.setState({
+                    showSnackbar: true,
+                    snackBarMsg: 'Unable to place your order! Please try again!'
+                });
+            }
+        });
+        xhrCheckOut.open("POST", this.props.baseUrl + '/order');
+        xhrCheckOut.setRequestHeader('authorization', 'Bearer ' + sessionStorage.getItem('access-token'));
+        xhrCheckOut.setRequestHeader("Content-Type", "application/json");
+        xhrCheckOut.send(saveOrderRequest);
     }
 
     /**
@@ -649,7 +709,7 @@ class Checkout extends Component {
                     <div className="stepper-section">
                         <Stepper activeStep={this.state.activeStep} orientation="vertical">
                             {this.state.steps.map((label, index) => (
-                                <Step key={label} completed={index === 1 ? (this.state.selectedPaymentMode !== '' ? true : false) : (this.state.selectedAddress === true) ? true : false} >
+                                <Step key={label} completed={index === 1 ? (this.state.selectedPaymentId !== '' ? true : false) : (this.state.selectedAddress === true) ? true : false} >
                                     <StepLabel>{label}</StepLabel>
                                     <StepContent>
                                         {this.getStepContent(index)}
@@ -676,7 +736,7 @@ class Checkout extends Component {
                                 </Step>
                             ))}
                         </Stepper>
-                        {this.state.activeStep === this.state.steps.length && this.state.selectedPaymentMode !== '' && (
+                        {this.state.activeStep === this.state.steps.length && this.state.selectedPaymentId !== '' && (
                             <Paper square elevation={0} className={classes.resetContainer}>
                                 <Typography>View the summary &amp; place your order now!</Typography>
                                 <Button onClick={this.handleReset} className={classes.button}>
