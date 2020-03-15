@@ -29,6 +29,9 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import React, { Component } from 'react';
 import Header from '../../common/Header';
 import './Checkout.css';
+import TextField from '@material-ui/core/TextField';
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
 
 /**
  * Custom Styles used to customize material ui components
@@ -95,6 +98,9 @@ const styles = theme => ({
     cartMenuItem: {
         marginLeft: '4%'
     },
+    textField: {
+        marginBottom: '20px',
+    }
 });
 
 /**
@@ -154,6 +160,13 @@ class Checkout extends Component {
             cartTotalAmount: 0,
             restaurantID: restaurantID,
             restaurantName: restaurantName,
+            couponName: '',
+            discountPercentage: 0,
+            discount: 0,
+            subTotal: 0,
+            TotalAmountWithoutDicount: 0,
+            showSnackbar: false,
+            snackBarMsg: '',
         }
     }
 
@@ -541,6 +554,9 @@ class Checkout extends Component {
             this.setState({
                 cartTotalAmount: cartTotalAmount
             });
+            this.setState({
+                TotalAmountWithoutDicount: cartTotalAmount
+            })
         }
         let xhr = new XMLHttpRequest();
         let thisComponent = this;
@@ -554,6 +570,67 @@ class Checkout extends Component {
         xhr.send();
     }
 
+    /** this method will called when coupon code is changed  */
+    couponChangeHandler = (event) => {
+        this.setState({ couponName: event.target.value });
+    }
+
+    /** this method will be called when apply button is clicked */
+    applyButtonHandler = () => {
+        /**
+         * this will be used to get the different payment methods
+         */
+        let that = this;
+        let xhrCoupon = new XMLHttpRequest();
+        let data = null;
+        xhrCoupon.addEventListener("readystatechange", function () {
+            // If the response from server is success
+            if (this.readyState === 4 && this.status === 200) {
+                // Set the percentage Discount to state
+                that.setState({
+                    discountPercentage: JSON.parse(this.response).percent
+                });
+                let discountCal = (that.state.TotalAmountWithoutDicount * that.state.discountPercentage) / 100;
+                let priceAfterDiscount = that.state.TotalAmountWithoutDicount - discountCal;
+                that.setState({
+                    subTotal: that.state.TotalAmountWithoutDicount,
+                    discount: discountCal,
+                    cartTotalAmount: priceAfterDiscount,
+                    showSnackbar: true,
+                    snackBarMsg: 'Coupon applied Successfully!',
+                });
+            }/** if invalid coupon is searched */
+            else if (this.readyState === 4 && this.status === 404) {
+                console.log("coupon invalid" + JSON.parse(this.response).message);
+                that.setState({
+                    showSnackbar: true,
+                    snackBarMsg: JSON.parse(this.response).message,
+                    netAmount: that.state.TotalAmountWithoutDicount,
+                    discountPercentage: 0,
+                    discount: 0,
+                    cartTotalAmount: that.state.TotalAmountWithoutDicount
+                });
+
+            }
+        });
+        xhrCoupon.open("GET", this.props.baseUrl + '/order/coupon/' + this.state.couponName);
+        xhrCoupon.setRequestHeader('authorization', 'Bearer ' + sessionStorage.getItem('access-token'));
+        xhrCoupon.setRequestHeader("Content-Type", "application/json");
+        xhrCoupon.send(data);
+
+    }
+
+    /**
+     * Handle Close event on Snackbar, if close event is triggered, hide it
+     */
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        // Setting the state variable to hide the Snackbar
+        this.setState({ showSnackbar: false, snackBarMsg: '' });
+    }
 
     render() {
 
@@ -648,6 +725,37 @@ class Checkout extends Component {
                                         </span>
                                     </div>
                                 )}
+                                {
+                                    /**
+                                     * Show the discount Coupon area
+                                     */
+                                }
+                                <div className='coupon-area'>
+                                    <div className='coupon-content'>
+                                        <TextField id="coupon-code" label="Coupon Code" variant="filled" onChange={this.couponChangeHandler} className={classes.textField} />
+                                        <Button variant="contained" onClick={this.applyButtonHandler}>
+                                            APPLY
+                                    </Button>
+                                    </div>
+                                    {this.state.discountPercentage !== 0 &&
+                                        <div className="discount-text-container">
+                                            <div className="discount-text wrap-white-space">
+                                                <Typography className='discount-item-text-checkout'>Sub Total</Typography>
+                                                <span className='cart-item-price-checkout wrap-white-space'>
+                                                    <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
+                                                    {this.state.subTotal}
+                                                </span>
+                                            </div>
+                                            <div className="discount-text">
+                                                <Typography className='discount-item-text-checkout wrap-white-space'>Discount</Typography>
+                                                <span className='cart-item-price-checkout wrap-white-space'>
+                                                    <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
+                                                    {this.state.discount}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                                 <Divider />
                                 {/**
                                  * Show the Total amount of the cart, price of all items together
@@ -666,6 +774,30 @@ class Checkout extends Component {
                         </Card>
                     </div>
                 </div>
+                {/**
+                         * Show the snack bar at the bottom left of the page
+                         * auto hides after 10 seconds, close icon is added to close if needed before the auto hide timesout
+                         */}
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={this.state.showSnackbar}
+                    autoHideDuration={10000}
+                    onClose={this.handleClose}
+                    TransitionComponent={this.state.transition}
+                    message={this.state.snackBarMsg}
+                    action={
+                        /**
+                         * Show close button to close the snackbar if the user wishes to
+                         */
+                        <React.Fragment>
+                            <IconButton size="small" aria-label="close" color="inherit" onClick={this.handleClose}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </React.Fragment>
+                    } />
             </div>
         );
     }

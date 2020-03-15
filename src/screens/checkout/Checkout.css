@@ -162,3 +162,32 @@
     width: 100%;
   }
 }
+
+/**
+ * this is used to style Coupen Content area containg text fied and apply button
+ */
+.coupon-content {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+/** this is used to style div showing sub Total and Discount */
+.discount-text-container {
+  display: flex;
+  align-items: baseline;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/** this is used to style the text in div showing sub Total and Discount*/
+.discount-text {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  justify-content: space-between;
+  flex-direction: row;
+}
+/** this is used to color TextField for Coupon code*/
+.MuiInputBase-input {
+  background-color: #ffffcc !important;
+}
