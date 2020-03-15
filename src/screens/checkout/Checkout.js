@@ -172,7 +172,7 @@ class Checkout extends Component {
             discountPercentage: 0,
             discount: 0,
             subTotal: 0,
-            TotalAmountWithoutDicount: 0,
+            totalAmountWithoutDiscount: 0,
             showSnackbar: false,
             snackBarMsg: '',
         }
@@ -185,7 +185,6 @@ class Checkout extends Component {
          *  browser’s address bar without going through the details page than
          *  customer will be redirected to home page
          */
-        console.log("checking cart Item" + JSON.stringify(this.state.cartItems));
         if (this.props.location.state === undefined) {
             this.props.history.push({
                 pathname: '/'
@@ -341,7 +340,6 @@ class Checkout extends Component {
 
     /** this is used handle change when the checkbox for payment is selected */
     handleChangePayment = event => {
-        console.log("checking payment" + event.target.value);
         this.setState({
             selectedPaymentId: event.target.value
         })
@@ -369,7 +367,7 @@ class Checkout extends Component {
             })
         }
     }
-    
+
     /**
      * prevent default submission of form
      */
@@ -396,7 +394,6 @@ class Checkout extends Component {
                 addressIsSelectedChange[j] = false;
             }
         }
-        console.log("selected address id" + this.state.customerAddresses[index].id);
         this.setState({
             addressIsSelected: addressIsSelectedChange,
             selectedAddress: true,
@@ -480,41 +477,41 @@ class Checkout extends Component {
                                 {/**
                              * The Select input control which shows the list of all states
                              */}
-                            <FormControl className={classes.formControl} required>
-                                <InputLabel htmlFor='addressState'>State</InputLabel>
-                                <Select
-                                    value={this.state.addressState}
-                                    onChange={this.handleChange('addressState')}
-                                    inputProps={{
-                                        name: 'addressState',
-                                        id: 'addressState',
-                                    }} fullWidth>
-                                    {this.state.states.map(locState =>
-                                        <MenuItem key={locState.id} value={locState.id}>{locState.state_name}</MenuItem>
-                                    )}
-                                </Select>
-                                <FormHelperText className={this.state.stateRequired}>
-                                    <span className='red'>required</span>
-                                </FormHelperText>
-                            </FormControl>
-                            <br />
-                            {/**
+                                <FormControl className={classes.formControl} required>
+                                    <InputLabel htmlFor='addressState'>State</InputLabel>
+                                    <Select
+                                        value={this.state.addressState}
+                                        onChange={this.handleChange('addressState')}
+                                        inputProps={{
+                                            name: 'addressState',
+                                            id: 'addressState',
+                                        }} fullWidth>
+                                        {this.state.states.map(locState =>
+                                            <MenuItem key={locState.id} value={locState.id}>{locState.state_name}</MenuItem>
+                                        )}
+                                    </Select>
+                                    <FormHelperText className={this.state.stateRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br />
+                                {/**
                              * Form input for pincode field, if the pincode is empty/not 6 digits, shows error message
                              */}
-                            <FormControl className={classes.formControl} required>
-                                <InputLabel htmlFor='pincode'>Pincode</InputLabel>
-                                <Input id='pincode' type='text' onChange={this.handleChange('pincode')} value={this.state.pincode} fullWidth />
-                                <FormHelperText className={this.state.pincodeRequired}>
-                                    <span className='red'>required</span>
-                                </FormHelperText>
-                                <FormHelperText className={this.state.invalidPincode}>
-                                    <span className='red'>Pincode must contain only numbers and must be 6 digits long</span>
-                                </FormHelperText>
-                            </FormControl>
-                            <br />
-                            <br />
-                            <Button variant="contained" color="secondary" onClick={this.saveAddressClickHandler}>
-                                Save Address
+                                <FormControl className={classes.formControl} required>
+                                    <InputLabel htmlFor='pincode'>Pincode</InputLabel>
+                                    <Input id='pincode' type='text' onChange={this.handleChange('pincode')} value={this.state.pincode} fullWidth />
+                                    <FormHelperText className={this.state.pincodeRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                    <FormHelperText className={this.state.invalidPincode}>
+                                        <span className='red'>Pincode must contain only numbers and must be 6 digits long</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br />
+                                <br />
+                                <Button variant="contained" color="secondary" onClick={this.saveAddressClickHandler}>
+                                    Save Address
                             </Button>
                             </TabContainer>
                         }
@@ -559,32 +556,26 @@ class Checkout extends Component {
         }
     };
 
+    /**
+     * this method is used to move the stepper to previous state
+     */
     handleBack = () => {
         var prevActiveStep = this.state.activeStep - 1;
         this.setState({ activeStep: prevActiveStep })
     };
 
+    /**
+     * this method is called on click of 'Change' Button
+     * ann is used  to change the value selected in stepper
+     */
     handleReset = () => {
         this.setState({ activeStep: 0 });
     };
 
-    isStepCompleted = (index) => {
-        if (index === 1) {
-            if (this.state.selectedPaymentId !== '') {
-                return true;
-            } else {
-                return false;
-            }
-
-        } else {
-            if (this.state.selectedAddress === true) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
+    /**
+     * this method is called once all the element on the page
+     * are corrected rendered , it is used to set state for cartItem
+     */
     componentDidMount() {
         if (this.state.cartItems) {
             let cartTotalAmount = 0;
@@ -595,7 +586,7 @@ class Checkout extends Component {
                 cartTotalAmount: cartTotalAmount
             });
             this.setState({
-                TotalAmountWithoutDicount: cartTotalAmount
+                totalAmountWithoutDiscount: cartTotalAmount
             })
         }
         let xhr = new XMLHttpRequest();
@@ -630,10 +621,10 @@ class Checkout extends Component {
                 that.setState({
                     discountPercentage: JSON.parse(this.response).percent
                 });
-                let discountCal = (that.state.TotalAmountWithoutDicount * that.state.discountPercentage) / 100;
-                let priceAfterDiscount = that.state.TotalAmountWithoutDicount - discountCal;
+                let discountCal = (that.state.totalAmountWithoutDiscount * that.state.discountPercentage) / 100;
+                let priceAfterDiscount = that.state.totalAmountWithoutDiscount - discountCal;
                 that.setState({
-                    subTotal: that.state.TotalAmountWithoutDicount,
+                    subTotal: that.state.totalAmountWithoutDiscount,
                     discount: discountCal,
                     cartTotalAmount: priceAfterDiscount,
                     couponId: JSON.parse(this.response).id,
@@ -642,15 +633,14 @@ class Checkout extends Component {
                 });
             }/** if invalid coupon is searched */
             else if (this.readyState === 4 && this.status !== 201) {
-                console.log("coupon invalid" + JSON.parse(this.response).message);
                 that.setState({
                     showSnackbar: true,
                     snackBarMsg: JSON.parse(this.response).message,
-                    netAmount: that.state.TotalAmountWithoutDicount,
+                    netAmount: that.state.totalAmountWithoutDiscount,
                     discountPercentage: 0,
                     discount: 0,
                     couponId: '',
-                    cartTotalAmount: that.state.TotalAmountWithoutDicount
+                    cartTotalAmount: that.state.totalAmountWithoutDiscount
                 });
 
             }
@@ -667,6 +657,7 @@ class Checkout extends Component {
         let that = this;
         let xhrCheckOut = new XMLHttpRequest();
         var itemsInCart = [];
+        var saveOrderRequest = null;
         for (var k = 0; k < this.state.cartItems.length; k++) {
             var Item = {
                 "item_id": this.state.cartItems[k].id,
@@ -675,21 +666,35 @@ class Checkout extends Component {
             }
             itemsInCart[k] = Item;
         }
-        // Create the json request for order Request
-        let saveOrderRequest = JSON.stringify({
-            "address_id": this.state.selectedAddressId,
-            "bill": 0,
-            "coupon_id": this.state.couponId,
-            "discount": 0,
-            "item_quantities": itemsInCart,
-            "payment_id": this.state.selectedPaymentId,
-            "restaurant_id": this.state.restaurantID
-        });
+        /**
+         * Create the json request for order Request
+         * Will add coupon_id and discount to request
+         * only if coupon is applied
+        */
+        if (this.state.couponName && this.state.discount !== 0) {
+            saveOrderRequest = JSON.stringify({
+                "address_id": this.state.selectedAddressId,
+                "bill": this.state.cartTotalAmount,
+                "coupon_id": this.state.couponId,
+                "discount": this.state.discount,
+                "item_quantities": itemsInCart,
+                "payment_id": this.state.selectedPaymentId,
+                "restaurant_id": this.state.restaurantID
+
+            });
+        } else {
+            saveOrderRequest = JSON.stringify({
+                "address_id": this.state.selectedAddressId,
+                "bill": this.state.cartTotalAmount,
+                "item_quantities": itemsInCart,
+                "payment_id": this.state.selectedPaymentId,
+                "restaurant_id": this.state.restaurantID,
+            });
+        }
         xhrCheckOut.addEventListener("readystatechange", function () {
             // If the response from server is success
             if (this.readyState === 4 && this.status === 201) {
                 // Set the percentage Discount to state
-                console.log("checking checkout data:" + this.response);
                 that.setState({
                     showSnackbar: true,
                     snackBarMsg: 'Order placed successfully! Your order ID is ' + JSON.parse(this.response).id
@@ -697,7 +702,6 @@ class Checkout extends Component {
 
             }/** if the response from server is not successs */
             else if (this.readyState === 4 && this.status !== 201) {
-                console.log("coupon invalid" + this.response);
                 that.setState({
                     showSnackbar: true,
                     snackBarMsg: 'Unable to place your order! Please try again!'
@@ -767,7 +771,7 @@ class Checkout extends Component {
                         </Stepper>
                         {this.state.activeStep === this.state.steps.length && this.state.selectedPaymentId !== '' && (
                             <Paper square elevation={0} className={classes.resetContainer}>
-                                <Typography>View the summary &amp; place your order now!</Typography>
+                                <Typography variant="subtitle1">View the summary and place your order now!</Typography>
                                 <Button onClick={this.handleReset} className={classes.button}>
                                     Change
                         </Button>
