@@ -749,7 +749,6 @@ class Checkout extends Component {
      */
     delayRedirect = (event) => {
         const { history: { push } } = this.props;
-        event.preventDefault();
         setTimeout(() => push('/'), 10000);
     }
     

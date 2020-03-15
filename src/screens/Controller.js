@@ -29,7 +29,13 @@ class Controller extends Component {
           <Route exact path='/' render={(props) => <Home {...props} baseUrl={this.baseUrl} />} />
           <Route exact path='/profile' render={(props) => <Profile {...props} baseUrl={this.baseUrl} />} />
           <Route exact path='/restaurant/:restaurantID' render={(props) => <Details {...props} baseUrl={this.baseUrl} />} />
-          <Route exact path='/checkout' render={(props) => (sessionStorage.getItem('access-token') !== null ? <Checkout {...props} baseUrl={this.baseUrl} /> : <Redirect to='/' />)} />
+          {/**
+           * Check if user is logged in and has added items to cart, only then navigate to checkout, else redirect to home page
+           */}
+          <Route exact path='/checkout' render={(props) => (sessionStorage.getItem('access-token') !== null
+            && props.location.state ? <Checkout {...props} baseUrl={this.baseUrl} /> : <Redirect to='/' />)} />
+
+
         </div>
       </Router>
     )
