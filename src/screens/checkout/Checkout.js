@@ -101,7 +101,7 @@ const styles = theme => ({
     /** Style the coupon field text box */
     textField: {
         marginBottom: '20px',
-        backgroundColor: '#e8e8e8 !important'
+        backgroundColor: 'rgb(255, 255, 102) !important'
     },
     /** Set the bottom margin for apply coupon button */
     applyBtn: {
@@ -751,7 +751,7 @@ class Checkout extends Component {
         const { history: { push } } = this.props;
         setTimeout(() => push('/'), 10000);
     }
-    
+
     /**
      * Handle Close event on Snackbar, if close event is triggered, hide it
      */
