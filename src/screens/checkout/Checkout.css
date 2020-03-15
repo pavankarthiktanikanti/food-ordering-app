@@ -22,8 +22,9 @@
 /** Set width and margin for each address in grid */
 
 .grid-address {
-  min-width: 250px;
   margin: 10px;
+  padding: 10px;
+  max-width: 200px;
 }
 
 /** Set the color/background for the tabs */
@@ -189,12 +190,6 @@
   width: 100%;
   justify-content: space-between;
   margin-bottom: 10px;
-}
-
-@media(max-width:1200px) {
-  .grid-address {
-    min-width: 100px;
-  }
 }
 
 /* Set the style for low screen width like small mobiles */
