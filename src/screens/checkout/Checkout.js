@@ -762,7 +762,7 @@ class Checkout extends Component {
                     <div className="stepper-section">
                         <Stepper activeStep={this.state.activeStep} orientation="vertical">
                             {this.state.steps.map((label, index) => (
-                                <Step key={label} completed={index === 1 ? (this.state.selectedPaymentId !== '' ? true : false) : (this.state.selectedAddress === true) ? true : false} >
+                                <Step key={label}>
                                     <StepLabel>{label}</StepLabel>
                                     <StepContent>
                                         {this.getStepContent(index)}

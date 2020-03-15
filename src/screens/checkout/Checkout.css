@@ -71,10 +71,11 @@
   width: 30%;
 }
 
-/** Set the padding for checkout card */
+/** Set the style for checkout card */
 
 .checkout-cart-card {
   padding: 10px;
+  margin: 28px;
 }
 
 /** Set the color of restaurant name on summary card */
