@@ -1,0 +1,86 @@
+/** sets the margin for tab container */
+.address-tab-container {
+  display: flex;
+  margin: 2%;
+}
+
+/* Set the margin for price displayed in the menu */
+
+.item-price {
+  margin-left: auto;
+}
+
+/* Set the margin for rupee icon displayed in the menu */
+
+.fa-rupee {
+  margin-right: 4px;
+}
+
+.wrap-white-space {
+  white-space: nowrap;
+}
+
+/* Set the width for cart/checkout frame */
+
+.cart-checkout-container {
+  width: 10%;
+}
+
+.cart-menu-item-section {
+  display: flex;
+  /*align-items: center;*/
+  margin-top: 5px;
+}
+
+/* Style the menu item in cart */
+
+.cart-menu-item {
+  text-transform: capitalize;
+  color: gray;
+}
+
+/* Style the quantity section in cart */
+
+.item-quantity-section {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+/** Set the color/background for the tabs */
+
+.tabs {
+  background-color: #3f51b5;
+  color: white;
+}
+
+/** Set the padding and alignment for tab container */
+
+.address-tab-container {
+  padding: 0px 0px 10px 0px;
+  text-align: left;
+}
+
+/** Set the display as none, in order to hide the element */
+
+.dispNone {
+  display: none;
+}
+
+/** Set the display as none, in order to show a hidden element */
+
+.dispBlock {
+  display: block;
+}
+
+/** Set the color red for Error Field validation messages */
+
+.red {
+  color: red;
+}
+
+/** Set the max height to show only 4 options in the state select box */
+
+.MuiMenu-list {
+  max-height: 180px;
+}
