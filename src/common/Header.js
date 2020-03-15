@@ -282,8 +282,11 @@ class Header extends Component {
                     // If in case already logged out/session expired, still clear the token info in session
                     sessionStorage.removeItem('userFirstName');
                     sessionStorage.removeItem('access-token');
+                    // toggle the menu and anchorEl
                     thisComponent.setState({
-                        isUserLoggedIn: false
+                        isUserLoggedIn: false,
+                        showMenu: !thisComponent.state.showMenu,
+                        anchorEl: null
                     });
                     // update the login status to redirect to home page from checkout page
                     if (thisComponent.props.updateLoginStatus) {
