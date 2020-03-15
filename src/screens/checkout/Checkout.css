@@ -70,19 +70,31 @@
   width: 30%;
 }
 
+/** Set the padding for checkout card */
+
+.checkout-cart-card {
+  padding: 10px;
+}
+
 /** Set the color of restaurant name on summary card */
 
 .checkout-restaurant-name {
-  color: grey;
+  color: #555555;
 }
 
 /** Style the menu items on Checkout summary card */
 
 .checkout-menu-item-section {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   margin-top: 5px;
   margin-bottom: 20px;
+}
+
+/** Style for color gray */
+
+.color-gray {
+  color: gray;
 }
 
 /* Style the circle icon for Veg item */
@@ -103,7 +115,6 @@
 
 .checkout-menu-item {
   text-transform: capitalize;
-  color: gray;
 }
 
 /* Style the quantity section in cart */
@@ -114,13 +125,13 @@
   margin-left: auto;
   flex-wrap: wrap;
   justify-content: center;
+  margin-left: auto;
 }
 
 /* Set the margin for price displayed in the menu */
 
 .checkout-item-price {
   margin-left: auto;
-  color: gray;
   min-width: 80px;
   text-align: right;
 }
@@ -145,9 +156,49 @@
   white-space: nowrap;
 }
 
+.discount-item-text-checkout, .cart-item-price-checkout {
+  color: gray;
+}
+
+/**
+ * this is used to style Coupen Content area containg text fied and apply button
+ */
+
+.coupon-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/** this is used to style div showing sub Total and Discount */
+
+.discount-text-container {
+  display: flex;
+  align-items: baseline;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 10px 0px;
+}
+
+/** this is used to style the text in div showing sub Total and Discount*/
+
+.discount-text {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+@media(max-width:1200px) {
+  .grid-address {
+    min-width: 100px;
+  }
+}
+
 /* Set the style for low screen width like small mobiles */
 
-@media (max-width: 525px) {
+@media (max-width: 800px) {
   /* Set the size of restaurant image for small screens */
   .checkout-container {
     display: flex;
@@ -155,35 +206,13 @@
     align-items: baseline;
     padding: 1%;
   }
+  /** Set the stepper section width to full on small screens */
   .stepper-section {
     width: 100%;
   }
+  /** Set the checkout cart width to full view on small screens */
   .checkout-cart-container {
-    width: 100%;
+    width: 95%;
+    margin: auto;
   }
-}
-
-/**
- * this is used to style Coupen Content area containg text fied and apply button
- */
-.coupon-content {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-/** this is used to style div showing sub Total and Discount */
-.discount-text-container {
-  display: flex;
-  align-items: baseline;
-  flex-direction: column;
-  justify-content: space-between;
-}
-/** this is used to style the text in div showing sub Total and Discount*/
-.discount-text {
-  display: flex;
-  align-items: baseline;
-  width: 100%;
-  justify-content: space-between;
-  flex-direction: row;
 }

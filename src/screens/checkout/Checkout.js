@@ -18,20 +18,20 @@ import Paper from '@material-ui/core/Paper';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
+import Snackbar from '@material-ui/core/Snackbar';
 import Step from '@material-ui/core/Step';
 import StepContent from '@material-ui/core/StepContent';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { Component } from 'react';
 import Header from '../../common/Header';
 import './Checkout.css';
-import TextField from '@material-ui/core/TextField';
-import Snackbar from '@material-ui/core/Snackbar';
-import CloseIcon from '@material-ui/icons/Close';
 
 /**
  * Custom Styles used to customize material ui components
@@ -96,11 +96,16 @@ const styles = theme => ({
     },
     /* Set the margin for menu item */
     cartMenuItem: {
-        marginLeft: '4%'
+        marginLeft: '4%',
+        width: '40%'
     },
     textField: {
         marginBottom: '20px',
-        backgroundColor: '#ffffcc !important'
+        backgroundColor: '#e8e8e8 !important'
+    },
+    /** Set the bottom margin for apply coupon button */
+    applyBtn: {
+        marginBottom: '20px'
     }
 });
 
@@ -347,6 +352,29 @@ class Checkout extends Component {
      */
     tabChangeHandler = (event, value) => {
         this.setState({ value });
+        if (value === 1) {
+            // If the New Address tab is selected, clear the form errors
+            this.setState({
+                buildingNo: '',
+                buildingNoRequired: 'dispNone',
+                locality: '',
+                localityRequired: 'dispNone',
+                city: '',
+                cityRequired: 'dispNone',
+                addressState: '',
+                stateRequired: 'dispNone',
+                pincode: '',
+                pincodeRequired: 'dispNone',
+                invalidPincode: 'dispNone',
+            })
+        }
+    }
+    
+    /**
+     * prevent default submission of form
+     */
+    handleSubmit = (event) => {
+        event.preventDefault();
     }
 
     /**
@@ -422,33 +450,34 @@ class Checkout extends Component {
                      * city, state and pincode on selecting the New Address tab along with error field validation
                      * messages as helper texts
                      */}
-                    {this.state.value === 1 &&
-                        <TabContainer>
-                            <FormControl className={classes.formControl} required>
-                                <InputLabel htmlFor='buildingNo'>Flat / Building No.</InputLabel>
-                                <Input id='buildingNo' type='text' onChange={this.handleChange('buildingNo')} value={this.state.buildingNo} fullWidth />
-                                <FormHelperText className={this.state.buildingNoRequired}>
-                                    <span className='red'>required</span>
-                                </FormHelperText>
-                            </FormControl>
-                            <br />
-                            <FormControl className={classes.formControl} required>
-                                <InputLabel htmlFor='locality'>Locality</InputLabel>
-                                <Input id='locality' type='text' onChange={this.handleChange('locality')} value={this.state.locality} fullWidth />
-                                <FormHelperText className={this.state.localityRequired}>
-                                    <span className='red'>required</span>
-                                </FormHelperText>
-                            </FormControl>
-                            <br />
-                            <FormControl className={classes.formControl} required>
-                                <InputLabel htmlFor='city'>City</InputLabel>
-                                <Input id='city' type='text' onChange={this.handleChange('city')} value={this.state.city} fullWidth />
-                                <FormHelperText className={this.state.cityRequired}>
-                                    <span className='red'>required</span>
-                                </FormHelperText>
-                            </FormControl>
-                            <br />
-                            {/**
+                    <form onSubmit={this.handleSubmit}>
+                        {this.state.value === 1 &&
+                            <TabContainer>
+                                <FormControl className={classes.formControl} required>
+                                    <InputLabel htmlFor='buildingNo'>Flat / Building No.</InputLabel>
+                                    <Input id='buildingNo' type='text' onChange={this.handleChange('buildingNo')} value={this.state.buildingNo} fullWidth />
+                                    <FormHelperText className={this.state.buildingNoRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br />
+                                <FormControl className={classes.formControl} required>
+                                    <InputLabel htmlFor='locality'>Locality</InputLabel>
+                                    <Input id='locality' type='text' onChange={this.handleChange('locality')} value={this.state.locality} fullWidth />
+                                    <FormHelperText className={this.state.localityRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br />
+                                <FormControl className={classes.formControl} required>
+                                    <InputLabel htmlFor='city'>City</InputLabel>
+                                    <Input id='city' type='text' onChange={this.handleChange('city')} value={this.state.city} fullWidth />
+                                    <FormHelperText className={this.state.cityRequired}>
+                                        <span className='red'>required</span>
+                                    </FormHelperText>
+                                </FormControl>
+                                <br />
+                                {/**
                              * The Select input control which shows the list of all states
                              */}
                             <FormControl className={classes.formControl} required>
@@ -487,9 +516,9 @@ class Checkout extends Component {
                             <Button variant="contained" color="secondary" onClick={this.saveAddressClickHandler}>
                                 Save Address
                             </Button>
-                        </TabContainer>
-                    }
-
+                            </TabContainer>
+                        }
+                    </form>
                 </React.Fragment >;
             case 1:
                 return (
@@ -638,7 +667,7 @@ class Checkout extends Component {
         let that = this;
         let xhrCheckOut = new XMLHttpRequest();
         var itemsInCart = [];
-        for (var k = 0; k < this.state.cartItems; k++) {
+        for (var k = 0; k < this.state.cartItems.length; k++) {
             var Item = {
                 "item_id": this.state.cartItems[k].id,
                 "price": this.state.cartItems[k].price,
@@ -769,18 +798,18 @@ class Checkout extends Component {
                                         {'NON_VEG' === cartItem.item_type && <FontAwesomeIcon icon={faStopCircle} className='fa-circle-red' />}
 
                                         <Typography className={classes.cartMenuItem}>
-                                            <span className='checkout-menu-item'>{cartItem.item_name}</span>
+                                            <span className='checkout-menu-item color-gray'>{cartItem.item_name}</span>
                                         </Typography>
                                         {/**
                                          * Show the quantity of the item
                                          */}
-                                        <section className='checkout-item-quantity-section'>
+                                        <section className='checkout-item-quantity-section color-gray'>
                                             <span>{cartItem.quantity}</span>
                                         </section>
                                         {/**
                                          * Show rupee symbol and the price of the item
                                          */}
-                                        <span className='checkout-item-price wrap-white-space'>
+                                        <span className='checkout-item-price wrap-white-space color-gray'>
                                             <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
                                             {cartItem.totalItemPrice.toFixed(2)}
                                         </span>
@@ -793,8 +822,8 @@ class Checkout extends Component {
                                 }
                                 <div className='coupon-area'>
                                     <div className='coupon-content'>
-                                        <TextField id="coupon-code" label="Coupon Code" variant="filled" onChange={this.couponChangeHandler} className={classes.textField} />
-                                        <Button variant="contained" onClick={this.applyButtonHandler}>
+                                        <TextField id="coupon-code" label="Coupon Code" variant="filled" onChange={this.couponChangeHandler} className={classes.textField} placeholder='Ex: FLAT30' />
+                                        <Button variant="contained" onClick={this.applyButtonHandler} className={classes.applyBtn}>
                                             APPLY
                                     </Button>
                                     </div>
@@ -804,14 +833,14 @@ class Checkout extends Component {
                                                 <Typography className='discount-item-text-checkout'>Sub Total</Typography>
                                                 <span className='cart-item-price-checkout wrap-white-space'>
                                                     <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
-                                                    {this.state.subTotal}
+                                                    {this.state.subTotal.toFixed(2)}
                                                 </span>
                                             </div>
                                             <div className="discount-text">
                                                 <Typography className='discount-item-text-checkout wrap-white-space'>Discount</Typography>
                                                 <span className='cart-item-price-checkout wrap-white-space'>
                                                     <FontAwesomeIcon icon={faRupeeSign} className='fa-rupee' />
-                                                    {this.state.discount}
+                                                    {this.state.discount.toFixed(2)}
                                                 </span>
                                             </div>
                                         </div>
@@ -836,16 +865,16 @@ class Checkout extends Component {
                     </div>
                 </div>
                 {/**
-                         * Show the snack bar at the bottom left of the page
-                         * auto hides after 10 seconds, close icon is added to close if needed before the auto hide timesout
-                         */}
+                 * Show the snack bar at the bottom left of the page
+                 * auto hides after 20 seconds, close icon is added to close if needed before the auto hide timesout
+                 */}
                 <Snackbar
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'left',
                     }}
                     open={this.state.showSnackbar}
-                    autoHideDuration={10000}
+                    autoHideDuration={20000}
                     onClose={this.handleClose}
                     TransitionComponent={this.state.transition}
                     message={this.state.snackBarMsg}
