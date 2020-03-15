@@ -8,8 +8,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormLabel from '@material-ui/core/FormLabel';
-import Grid from '@material-ui/core/Grid';
 import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -75,21 +75,17 @@ const styles = theme => ({
         margin: '10px'
     },
     noBorder: {
-        boder: 'none',
+        border: 'none',
         margin: '10px'
     },
     buttonAlign: {
-        display: 'flex',
-        justifyContent: 'flex-end'
+        float: 'right'
     },
     green: {
         color: 'green'
     },
     grey: {
         color: 'grey',
-    },
-    padding: {
-        padding: '10px 10px 50px 10px'
     },
     buttonMargin: {
         marginTop: '20px'
@@ -142,6 +138,7 @@ class Checkout extends Component {
          * Set the state with all the required fields and values
          */
         this.state = {
+            cols: 3,
             activeStep: 0,
             paymentModes: [],
             selectedPaymentId: '',
@@ -413,25 +410,25 @@ class Checkout extends Component {
                     </Tabs>
                     {this.state.value === 0 && this.state.customerAddresses.length !== 0 &&
                         <TabContainer>
-                            <div className={classes.rootGrid}>
-                                <GridList className={classes.gridList} cols={3} cellHeight={"auto"}>
+                            <div>
+                                <GridList className={classes.gridList} cols={this.state.cols} spacing={2} cellHeight={"auto"}>
                                     {this.state.customerAddresses.map((address, index) => (
-                                        <Grid key={address.id} className={(this.state.addressIsSelected[index] === true ? classes.coloredBorder : classes.noBorder)}>
+                                        <GridListTile key={address.id} className={(this.state.addressIsSelected[index] === true ? classes.coloredBorder : classes.noBorder)}
+                                            onClick={() => this.addressSelectionHandler(index)}>
                                             <div className='grid-address'>
-                                                <div className={classes.padding}>
-                                                    <Typography variant="subtitle1" component="p">{address.flat_building_name}</Typography>
-                                                    <Typography variant="subtitle1" component="p">{address.locality}</Typography >
-                                                    <Typography variant="subtitle1" component="p">{address.city}</Typography >
-                                                    <Typography variant="subtitle1" component="p">{address.state.state_name}</Typography >
-                                                    <Typography variant="subtitle1" component="p">{address.pincode}</Typography >
-                                                </div>
+                                                <Typography variant="subtitle1" component="p">{address.flat_building_name}</Typography>
+                                                <Typography variant="subtitle1" component="p">{address.locality}</Typography>
+                                                <Typography variant="subtitle1" component="p">{address.city}</Typography>
+                                                <Typography variant="subtitle1" component="p">{address.state.state_name}</Typography>
+                                                <Typography variant="subtitle1" component="p">{address.pincode}</Typography>
                                                 <div className={classes.buttonAlign}>
-                                                    <IconButton className={this.state.addressIsSelected[index] !== true ? classes.grey : classes.green} aria-label="checkCircle" onClick={() => this.addressSelectionHandler(index)} >
+                                                    <IconButton className={this.state.addressIsSelected[index] !== true ? classes.grey : classes.green}
+                                                        aria-label="checkCircle" onClick={() => this.addressSelectionHandler(index)}>
                                                         <CheckCircleIcon />
                                                     </IconButton>
                                                 </div>
                                             </div>
-                                        </Grid>
+                                        </GridListTile>
                                     ))}
                                 </GridList>
                             </div>
@@ -557,7 +554,7 @@ class Checkout extends Component {
     };
 
     /**
-     * this method is used to move the stepper to previous state
+     * This method is used to move the stepper to previous step
      */
     handleBack = () => {
         var prevActiveStep = this.state.activeStep - 1;
@@ -565,27 +562,28 @@ class Checkout extends Component {
     };
 
     /**
-     * this method is called on click of 'Change' Button
-     * ann is used  to change the value selected in stepper
+     * This method is called on click of 'Change' Button
+     * and is used  to change the value selected in stepper
+     * to show the Delivery step again for the customer to choose
      */
     handleReset = () => {
         this.setState({ activeStep: 0 });
     };
 
     /**
-     * this method is called once all the element on the page
-     * are corrected rendered , it is used to set state for cartItem
+     * This method is called once all the elements on the page
+     * are rendered, it is used to set state for cartItems
      */
     componentDidMount() {
+        // if the cart items are present in state, update the cart total amount
         if (this.state.cartItems) {
             let cartTotalAmount = 0;
             this.state.cartItems.forEach(cartItem => {
                 cartTotalAmount += cartItem.totalItemPrice;
             });
+            // update total amount without discount for applying any coupon if customer provides
             this.setState({
-                cartTotalAmount: cartTotalAmount
-            });
-            this.setState({
+                cartTotalAmount: cartTotalAmount,
                 totalAmountWithoutDiscount: cartTotalAmount
             })
         }
@@ -599,6 +597,28 @@ class Checkout extends Component {
         });
         xhr.open('GET', this.props.baseUrl + '/states');
         xhr.send();
+        // Add event listener for window resize
+        window.addEventListener('resize', this.updateGridViewCols);
+    }
+
+    /**
+     * Remove the resize event listener when the component is about to unmount
+     */
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateGridViewCols);
+    }
+
+    /**
+     * This method updates the number of columnns to be displayed in Grid List based
+     * on the window inner width, show three addresses in large view and two in small view
+     * screens
+     */
+    updateGridViewCols = () => {
+        if (window.innerWidth <= 650) {
+            this.setState({ cols: 2 });
+        } else {
+            this.setState({ cols: 3 });
+        }
     }
 
     /** this method will called when coupon code is changed  */
@@ -771,7 +791,7 @@ class Checkout extends Component {
                         </Stepper>
                         {this.state.activeStep === this.state.steps.length && this.state.selectedPaymentId !== '' && (
                             <Paper square elevation={0} className={classes.resetContainer}>
-                                <Typography variant="subtitle1">View the summary and place your order now!</Typography>
+                                <Typography variant="subtitle1" component="p">View the summary and place your order now!</Typography>
                                 <Button onClick={this.handleReset} className={classes.button}>
                                     Change
                         </Button>
@@ -829,7 +849,7 @@ class Checkout extends Component {
                                         <TextField id="coupon-code" label="Coupon Code" variant="filled" onChange={this.couponChangeHandler} className={classes.textField} placeholder='Ex: FLAT30' />
                                         <Button variant="contained" onClick={this.applyButtonHandler} className={classes.applyBtn}>
                                             APPLY
-                                    </Button>
+                                        </Button>
                                     </div>
                                     {this.state.discountPercentage !== 0 &&
                                         <div className="discount-text-container">
