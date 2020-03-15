@@ -30,6 +30,7 @@ import Typography from '@material-ui/core/Typography';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import Header from '../../common/Header';
 import './Checkout.css';
 
@@ -142,6 +143,7 @@ class Checkout extends Component {
          * Set the state with all the required fields and values
          */
         this.state = {
+            isUserLoggedIn: sessionStorage.getItem('access-token') !== null,
             cols: 3,
             activeStep: 0,
             paymentModes: [],
@@ -752,18 +754,29 @@ class Checkout extends Component {
         this.setState({ showSnackbar: false, snackBarMsg: '' });
     }
 
+    /**
+     * Update the user logged in status when logout is clicked in header and successful logout
+     */
+    updateLoginStatus = () => {
+        this.setState({ isUserLoggedIn: false });
+    }
+
     render() {
 
         const { classes } = this.props;
 
         return (
-            <div >
+            <div>
+                {/**
+                 * Redirect to home page on logout
+                 */}
+                {!this.state.isUserLoggedIn && <Redirect to='/' />}
                 {/**
                  * the data passed in to this component can be used using
                  * this.props.location.state.cartItems
                  * this.props.location.state.restaurantID
                  */}
-                <Header pageId='checkout' baseUrl={this.props.baseUrl} />
+                <Header pageId='checkout' baseUrl={this.props.baseUrl} updateLoginStatus={this.updateLoginStatus} />
                 <div className='checkout-container'>
                     <div className="stepper-section">
                         <Stepper activeStep={this.state.activeStep} orientation="vertical">
