@@ -38,16 +38,16 @@ import './Checkout.css';
  * @param {*} theme
  */
 const styles = theme => ({
-    root: {
-        width: '65%',
-    },
+    /** Style the back button in the stepper */
     button: {
         marginTop: theme.spacing(1),
         marginRight: theme.spacing(1),
     },
+    /** Set the bottom margin for the action container in stepper */
     actionsContainer: {
         marginBottom: theme.spacing(2)
     },
+    /** Set padding for the area which resets the stepper */
     resetContainer: {
         padding: theme.spacing(3)
     },
@@ -58,35 +58,37 @@ const styles = theme => ({
         margin: theme.spacing(1),
         width: 200,
     },
-    rootGrid: {
-        display: 'flex',
-        flexWrap: 'nowrap',
-        backgroundColor: theme.palette.background.paper,
-    },
+    /** Style the grid list of addresses with nowrap */
     gridList: {
         flexWrap: 'nowrap',
         // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
         transform: 'translateZ(0)'
     },
+    /** Set the border color for selected address grid */
     coloredBorder: {
         border: '2px solid #e0265f',
         boxShadow: '2px 2px #e0265f',
         borderRadius: '5px',
         margin: '10px'
     },
+    /** Set no border when address grid is not selected */
     noBorder: {
         border: 'none',
         margin: '10px'
     },
+    /** Align the button icon to the right */
     buttonAlign: {
         float: 'right'
     },
+    /** Setting color to green */
     green: {
         color: 'green'
     },
+    /** Setting color to grey */
     grey: {
         color: 'grey',
     },
+    /** Set the bottom margin for button */
     buttonMargin: {
         marginTop: '20px'
     },
@@ -95,6 +97,7 @@ const styles = theme => ({
         marginLeft: '4%',
         width: '40%'
     },
+    /** Style the coupon field text box */
     textField: {
         marginBottom: '20px',
         backgroundColor: '#e8e8e8 !important'
@@ -125,6 +128,7 @@ class Checkout extends Component {
         let cartItems = null;
         let restaurantID = null;
         let restaurantName = null;
+        // if state is passed from the previous screen read the cart items
         if (props.location.state) {
             cartItems = props.location.state.cartItems;
             restaurantID = props.location.state.restaurantID;
@@ -641,6 +645,7 @@ class Checkout extends Component {
                 that.setState({
                     discountPercentage: JSON.parse(this.response).percent
                 });
+                // calculate the discount amount and update the final amount
                 let discountCal = (that.state.totalAmountWithoutDiscount * that.state.discountPercentage) / 100;
                 let priceAfterDiscount = that.state.totalAmountWithoutDiscount - discountCal;
                 that.setState({
@@ -652,7 +657,8 @@ class Checkout extends Component {
                     snackBarMsg: 'Coupon applied Successfully!',
                 });
             }/** if invalid coupon is searched */
-            else if (this.readyState === 4 && this.status !== 201) {
+            else if (this.readyState === 4 && this.status !== 200) {
+                // show the snack bar with the error message received from server
                 that.setState({
                     showSnackbar: true,
                     snackBarMsg: JSON.parse(this.response).message,
@@ -717,7 +723,7 @@ class Checkout extends Component {
                 // Set the percentage Discount to state
                 that.setState({
                     showSnackbar: true,
-                    snackBarMsg: 'Order placed successfully! Your order ID is ' + JSON.parse(this.response).id
+                    snackBarMsg: 'Order placed successfully! Your order ID is ' + JSON.parse(this.response).id + '.'
                 });
 
             }/** if the response from server is not successs */
@@ -839,11 +845,9 @@ class Checkout extends Component {
                                         </span>
                                     </div>
                                 )}
-                                {
-                                    /**
-                                     * Show the discount Coupon area
-                                     */
-                                }
+                                {/**
+                                 * Show the discount Coupon section for the user to apply any valid coupons
+                                 */}
                                 <div className='coupon-area'>
                                     <div className='coupon-content'>
                                         <TextField id="coupon-code" label="Coupon Code" variant="filled" onChange={this.couponChangeHandler} className={classes.textField} placeholder='Ex: FLAT30' />
@@ -851,6 +855,9 @@ class Checkout extends Component {
                                             APPLY
                                         </Button>
                                     </div>
+                                    {/**
+                                     * Show the after discount applied details only when the coupon is valid and applied successfully
+                                     */}
                                     {this.state.discountPercentage !== 0 &&
                                         <div className="discount-text-container">
                                             <div className="discount-text wrap-white-space">
