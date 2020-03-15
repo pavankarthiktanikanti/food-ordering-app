@@ -41,7 +41,7 @@ const styles = theme => ({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        whiteSpace: 'no-wrap',
+        whiteSpace: 'nowrap',
         margin: '10px'
     },
     /** set style for rating box displayed in the card */
