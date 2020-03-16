@@ -89,6 +89,11 @@ const styles = theme => ({
     grey: {
         color: 'grey',
     },
+    /** Set the color and margin for no address text */
+    noAddress: {
+        color: 'grey',
+        marginTop: '20px'
+    },
     /** Set the bottom margin for button */
     buttonMargin: {
         marginTop: '20px'
@@ -230,19 +235,24 @@ class Checkout extends Component {
         xhrDataStates.send(data);
     }
 
+    /**
+     * This will be used to get the saved addresses for a customer
+     */
     fetchSavedAddressesOfCustomer = () => {
-        /**
-         * this will be used to get the saved addresses for a customer
-         */
+
         let xhrDataAddress = new XMLHttpRequest();
         let thisComponent = this;
         xhrDataAddress.addEventListener("readystatechange", function () {
             // If the response from server is success
             if (this.readyState === 4 && this.status === 200) {
-                // Set the saved addresses to state
-                thisComponent.setState({
-                    customerAddresses: JSON.parse(this.response).addresses
-                });
+                let addresses = JSON.parse(this.response).addresses;
+                // Set the addresses only if not null
+                if (addresses) {
+                    // Set the saved addresses to state
+                    thisComponent.setState({
+                        customerAddresses: addresses
+                    });
+                }
                 let addressIsSelectedInitial = [];
                 for (var i = 0; i < thisComponent.state.customerAddresses.length; i++) {
                     addressIsSelectedInitial[i] = false;
@@ -442,7 +452,7 @@ class Checkout extends Component {
                     }
                     {this.state.value === 0 && this.state.customerAddresses.length === 0 &&
                         <TabContainer>
-                            <Typography variant="body1" className={classes.grey}>There are no saved addresses! You can save an address using the &apos;New Address&apos; tab or using your &lsquo;Profile&rsquo; menu option.</Typography>
+                            <Typography variant="body1" className={classes.noAddress}>There are no saved addresses! You can save an address using the &apos;New Address&apos; tab or using your &lsquo;Profile&rsquo; menu option.</Typography>
                         </TabContainer>
                     }
                     {/**
@@ -593,16 +603,6 @@ class Checkout extends Component {
                 totalAmountWithoutDiscount: cartTotalAmount
             })
         }
-        let xhr = new XMLHttpRequest();
-        let thisComponent = this;
-        xhr.addEventListener('readystatechange', function () {
-            if (this.readyState === 4 && this.status === 200) {
-                let response = JSON.parse(this.responseText);
-                thisComponent.setState({ states: response.states });
-            }
-        });
-        xhr.open('GET', this.props.baseUrl + '/states');
-        xhr.send();
         // Add event listener for window resize
         window.addEventListener('resize', this.updateGridViewCols);
     }
@@ -632,8 +632,21 @@ class Checkout extends Component {
         this.setState({ couponName: event.target.value });
     }
 
-    /** this method will be called when apply button is clicked */
+    /**
+     * This method will be called when apply button is clicked
+     * applies the discount based on the percentage
+     * of discount if the coupon code is valid
+     * Show snackbar error message if it is not entered or an invalid coupon
+     */
     applyButtonHandler = () => {
+        // If no coupon is entered, prevent backend api calls by showing snackbar
+        if (this.state.couponName === '') {
+            this.setState({
+                showSnackbar: true,
+                snackBarMsg: 'Please provide a Coupon Code to apply!'
+            });
+            return;
+        }
         /**
          * this will be used to get the different payment methods
          */
@@ -682,66 +695,76 @@ class Checkout extends Component {
 
     /** this method will called when 'place order' button is clicked */
     checkoutClickHandler = (event) => {
-        let that = this;
-        let xhrCheckOut = new XMLHttpRequest();
-        var itemsInCart = [];
-        var saveOrderRequest = null;
-        for (var k = 0; k < this.state.cartItems.length; k++) {
-            var Item = {
-                "item_id": this.state.cartItems[k].id,
-                "price": this.state.cartItems[k].price,
-                "quantity": this.state.cartItems[k].quantity
+        /** Call to backend API to place an order will be made only
+         if Delivery Address and Payment Option is selected */
+        if (this.state.selectedAddressId !== '' && this.state.selectedPaymentId !== '') {
+            let that = this;
+            let xhrCheckOut = new XMLHttpRequest();
+            var itemsInCart = [];
+            var saveOrderRequest = null;
+            for (var k = 0; k < this.state.cartItems.length; k++) {
+                var Item = {
+                    "item_id": this.state.cartItems[k].id,
+                    "price": this.state.cartItems[k].price,
+                    "quantity": this.state.cartItems[k].quantity
+                }
+                itemsInCart[k] = Item;
             }
-            itemsInCart[k] = Item;
-        }
-        /**
-         * Create the json request for order Request
-         * Will add coupon_id and discount to request
-         * only if coupon is applied
-        */
-        if (this.state.couponName && this.state.discount !== 0) {
-            saveOrderRequest = JSON.stringify({
-                "address_id": this.state.selectedAddressId,
-                "bill": this.state.cartTotalAmount,
-                "coupon_id": this.state.couponId,
-                "discount": this.state.discount,
-                "item_quantities": itemsInCart,
-                "payment_id": this.state.selectedPaymentId,
-                "restaurant_id": this.state.restaurantID
+            /**
+             * Create the json request for order Request
+             * Will add coupon_id and discount to request
+             * only if coupon is applied
+            */
+            if (this.state.couponName && this.state.discount !== 0) {
+                saveOrderRequest = JSON.stringify({
+                    "address_id": this.state.selectedAddressId,
+                    "bill": this.state.cartTotalAmount,
+                    "coupon_id": this.state.couponId,
+                    "discount": this.state.discount,
+                    "item_quantities": itemsInCart,
+                    "payment_id": this.state.selectedPaymentId,
+                    "restaurant_id": this.state.restaurantID
 
-            });
-        } else {
-            saveOrderRequest = JSON.stringify({
-                "address_id": this.state.selectedAddressId,
-                "bill": this.state.cartTotalAmount,
-                "item_quantities": itemsInCart,
-                "payment_id": this.state.selectedPaymentId,
-                "restaurant_id": this.state.restaurantID,
-            });
-        }
-        xhrCheckOut.addEventListener("readystatechange", function () {
-            // If the response from server is success
-            if (this.readyState === 4 && this.status === 201) {
-                // Set the percentage Discount to state
-                that.setState({
-                    showSnackbar: true,
-                    snackBarMsg: 'Order placed successfully! Your order ID is ' + JSON.parse(this.response).id + '.'
                 });
-                // Delay the redirect to home after successful order
-                that.delayRedirect(event);
-
-            }/** if the response from server is not successs */
-            else if (this.readyState === 4 && this.status !== 201) {
-                that.setState({
-                    showSnackbar: true,
-                    snackBarMsg: 'Unable to place your order! Please try again!'
+            } else {
+                saveOrderRequest = JSON.stringify({
+                    "address_id": this.state.selectedAddressId,
+                    "bill": this.state.cartTotalAmount,
+                    "item_quantities": itemsInCart,
+                    "payment_id": this.state.selectedPaymentId,
+                    "restaurant_id": this.state.restaurantID,
                 });
             }
-        });
-        xhrCheckOut.open("POST", this.props.baseUrl + '/order');
-        xhrCheckOut.setRequestHeader('authorization', 'Bearer ' + sessionStorage.getItem('access-token'));
-        xhrCheckOut.setRequestHeader("Content-Type", "application/json");
-        xhrCheckOut.send(saveOrderRequest);
+            xhrCheckOut.addEventListener("readystatechange", function () {
+                // If the response from server is success
+                if (this.readyState === 4 && this.status === 201) {
+                    // Set the percentage Discount to state
+                    that.setState({
+                        showSnackbar: true,
+                        snackBarMsg: 'Order placed successfully! Your order ID is ' + JSON.parse(this.response).id + '.'
+                    });
+                    // Delay the redirect to home after successful order
+                    that.delayRedirect(event);
+
+                }/** if the response from server is not successs */
+                else if (this.readyState === 4 && this.status !== 201) {
+                    that.setState({
+                        showSnackbar: true,
+                        snackBarMsg: 'Unable to place your order! Please try again!'
+                    });
+                }
+            });
+            xhrCheckOut.open("POST", this.props.baseUrl + '/order');
+            xhrCheckOut.setRequestHeader('authorization', 'Bearer ' + sessionStorage.getItem('access-token'));
+            xhrCheckOut.setRequestHeader("Content-Type", "application/json");
+            xhrCheckOut.send(saveOrderRequest);
+        }   /** If Delivery and Payment is not selected than just a message will be shown to select both options first */
+        else {
+            this.setState({
+                showSnackbar: true,
+                snackBarMsg: 'Please select Delivery and Payment Option before Placing an Order !'
+            });
+        }
     }
 
     /**
@@ -751,7 +774,7 @@ class Checkout extends Component {
         const { history: { push } } = this.props;
         setTimeout(() => push('/'), 10000);
     }
-    
+
     /**
      * Handle Close event on Snackbar, if close event is triggered, hide it
      */

@@ -145,7 +145,6 @@
     align-items: center;
     margin-left: auto;
     flex-wrap: wrap;
-    justify-content: center;
 }
 
 /* Style the price section in the cart with margin, width and alignment */
@@ -215,5 +214,14 @@
     .restaurant-img {
         max-width: 250px;
         width: auto;
+    }
+}
+
+/* Set the style for low screen width like small mobiles */
+
+@media(max-width:310px) {
+    /* Justify content center for item quantity on small screens */
+    .item-quantity-section {
+        justify-content: center;
     }
 }
