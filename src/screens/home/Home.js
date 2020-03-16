@@ -117,7 +117,7 @@ class Home extends Component {
                         restaurants: JSON.parse(this.response).restaurants
                     });
                     // If there are no restaurants matching with the search, show message as  No Restaurant found
-                    if (that.state.restaurants !== null && that.state.restaurants.length === 0) {
+                    if (that.state.restaurants === null || that.state.restaurants.length === 0) {
                         that.setState({ dispMessage: 'dispBlock' });
                     } else {
                         that.setState({ dispMessage: 'dispNone' });

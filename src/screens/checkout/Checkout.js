@@ -89,6 +89,11 @@ const styles = theme => ({
     grey: {
         color: 'grey',
     },
+    /** Set the color and margin for no address text */
+    noAddress: {
+        color: 'grey',
+        marginTop: '20px'
+    },
     /** Set the bottom margin for button */
     buttonMargin: {
         marginTop: '20px'
@@ -101,7 +106,7 @@ const styles = theme => ({
     /** Style the coupon field text box */
     textField: {
         marginBottom: '20px',
-        backgroundColor: 'rgb(255, 255, 102) !important'
+        backgroundColor: '#e8e8e8 !important'
     },
     /** Set the bottom margin for apply coupon button */
     applyBtn: {
@@ -230,19 +235,24 @@ class Checkout extends Component {
         xhrDataStates.send(data);
     }
 
+    /**
+     * This will be used to get the saved addresses for a customer
+     */
     fetchSavedAddressesOfCustomer = () => {
-        /**
-         * this will be used to get the saved addresses for a customer
-         */
+
         let xhrDataAddress = new XMLHttpRequest();
         let thisComponent = this;
         xhrDataAddress.addEventListener("readystatechange", function () {
             // If the response from server is success
             if (this.readyState === 4 && this.status === 200) {
-                // Set the saved addresses to state
-                thisComponent.setState({
-                    customerAddresses: JSON.parse(this.response).addresses
-                });
+                let addresses = JSON.parse(this.response).addresses;
+                // Set the addresses only if not null
+                if (addresses) {
+                    // Set the saved addresses to state
+                    thisComponent.setState({
+                        customerAddresses: addresses
+                    });
+                }
                 let addressIsSelectedInitial = [];
                 for (var i = 0; i < thisComponent.state.customerAddresses.length; i++) {
                     addressIsSelectedInitial[i] = false;
@@ -442,7 +452,7 @@ class Checkout extends Component {
                     }
                     {this.state.value === 0 && this.state.customerAddresses.length === 0 &&
                         <TabContainer>
-                            <Typography variant="body1" className={classes.grey}>There are no saved addresses! You can save an address using the &apos;New Address&apos; tab or using your &lsquo;Profile&rsquo; menu option.</Typography>
+                            <Typography variant="body1" className={classes.noAddress}>There are no saved addresses! You can save an address using the &apos;New Address&apos; tab or using your &lsquo;Profile&rsquo; menu option.</Typography>
                         </TabContainer>
                     }
                     {/**
@@ -593,16 +603,6 @@ class Checkout extends Component {
                 totalAmountWithoutDiscount: cartTotalAmount
             })
         }
-        let xhr = new XMLHttpRequest();
-        let thisComponent = this;
-        xhr.addEventListener('readystatechange', function () {
-            if (this.readyState === 4 && this.status === 200) {
-                let response = JSON.parse(this.responseText);
-                thisComponent.setState({ states: response.states });
-            }
-        });
-        xhr.open('GET', this.props.baseUrl + '/states');
-        xhr.send();
         // Add event listener for window resize
         window.addEventListener('resize', this.updateGridViewCols);
     }
@@ -632,8 +632,21 @@ class Checkout extends Component {
         this.setState({ couponName: event.target.value });
     }
 
-    /** this method will be called when apply button is clicked */
+    /**
+     * This method will be called when apply button is clicked
+     * applies the discount based on the percentage
+     * of discount if the coupon code is valid
+     * Show snackbar error message if it is not entered or an invalid coupon
+     */
     applyButtonHandler = () => {
+        // If no coupon is entered, prevent backend api calls by showing snackbar
+        if (this.state.couponName === '') {
+            this.setState({
+                showSnackbar: true,
+                snackBarMsg: 'Please provide a Coupon Code to apply!'
+            });
+            return;
+        }
         /**
          * this will be used to get the different payment methods
          */
